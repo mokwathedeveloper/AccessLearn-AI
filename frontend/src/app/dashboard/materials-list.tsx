@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { 
   FileText, 
   Headphones, 
@@ -28,64 +27,63 @@ export async function MaterialsList() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-red-50/50 rounded-3xl border border-red-100 text-red-600 space-y-3">
-        <AlertCircle className="w-8 h-8" />
-        <p className="font-bold">Failed to load materials</p>
-        <p className="text-sm">Please refresh the page or try again later.</p>
+      <div className="flex flex-col items-center justify-center p-12 bg-red-50/30 rounded-3xl border border-red-100 text-red-600 text-center space-y-3">
+        <AlertCircle className="w-8 h-8 opacity-50" />
+        <p className="font-bold text-sm tracking-tight uppercase">Registry Timeout</p>
       </div>
     )
   }
 
   if (!materials || materials.length === 0) {
     return (
-      <div className="bg-white rounded-3xl p-20 border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in duration-500">
-        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center">
-           <FileText className="w-10 h-10 text-slate-300" />
+      <div className="bg-white rounded-3xl p-24 border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in-95">
+        <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center">
+           <FileText className="w-8 h-8 text-slate-200" />
         </div>
-        <div className="space-y-2 max-w-sm">
-           <p className="text-slate-900 font-bold text-lg">No materials found</p>
-           <p className="text-slate-500 text-sm">Upload your first academic document above to start the AI transformation process.</p>
+        <div className="space-y-1">
+           <p className="text-slate-900 font-bold text-lg uppercase tracking-tight">Vault Empty</p>
+           <p className="text-slate-400 text-xs font-medium max-w-[200px] mx-auto">Upload a document to initialize your neural archive.</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 items-stretch">
       {materials.map((material) => (
-        <Link key={material.id} href={`/dashboard/material/${material.id}`} className="group block outline-none">
-          <Card className="overflow-hidden border-slate-100 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:border-primary/20 group-hover:-translate-y-1 bg-white relative">
-            <div className="absolute top-0 left-0 w-1 h-full bg-primary/10 group-hover:bg-primary transition-colors" />
-            
-            <CardContent className="p-6 space-y-6">
-              <div className="flex justify-between items-start">
+        <Link key={material.id} href={`/dashboard/material/${material.id}`} className="group block outline-none h-full">
+          <Card className="master-card rounded-2xl">
+            <CardContent className="p-7 flex flex-col h-full space-y-6">
+              <div className="flex justify-between items-start gap-4">
                 <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary transition-colors group-hover:bg-primary/10">
+                   <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500 shadow-inner">
                       <FileText className="w-6 h-6" />
                    </div>
-                   <div className="space-y-1">
-                      <h3 className="font-bold text-slate-900 line-clamp-1 group-hover:text-primary transition-colors" title={material.title}>
+                   <div className="space-y-1 overflow-hidden">
+                      <h3 className="font-bold text-slate-900 text-sm truncate leading-none tracking-tight uppercase" title={material.title}>
                         {material.title}
                       </h3>
                       <div className="flex items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                         <Calendar className="w-3 h-3 mr-1" />
+                         <Calendar className="w-3 h-3 mr-1.5 opacity-60" />
                          {new Date(material.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </div>
                    </div>
                 </div>
-                <StatusBadge status={material.status} />
+                <StatusIndicator status={material.status} />
               </div>
 
-              <div className="flex items-center gap-3 pt-2">
-                <FeatureIndicator active={!!material.audio_url} icon={<Headphones className="w-3.5 h-3.5" />} label="Audio" />
-                <FeatureIndicator active={!!material.summary} icon={<Sparkles className="w-3.5 h-3.5" />} label="AI Insights" />
+              <div className="flex-1 space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  <FeaturePill active={!!material.audio_url} icon={<Headphones className="w-3.5 h-3.5" />} label="Audio" />
+                  <FeaturePill active={!!material.summary} icon={<Sparkles className="w-3.5 h-3.5" />} label="Neural" />
+                </div>
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-slate-50">
-                 <span className="text-xs font-bold text-primary flex items-center group-hover:translate-x-1 transition-transform">
-                    Review Content <ChevronRight className="w-3 h-3 ml-1" />
+              <div className="flex items-center justify-between pt-4 border-t border-slate-50 mt-auto">
+                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.15em] flex items-center group-hover:gap-2 transition-all">
+                    Open Reader <ChevronRight className="w-3.5 h-3.5" />
                  </span>
-                 <span className="text-[10px] text-slate-300 font-medium">ID: {material.id.substring(0,8)}</span>
+                 <span className="text-[9px] font-mono text-slate-300 font-bold">ID:{material.id.substring(0,6).toUpperCase()}</span>
               </div>
             </CardContent>
           </Card>
@@ -95,48 +93,39 @@ export async function MaterialsList() {
   )
 }
 
-function FeatureIndicator({ active, icon, label }: { active: boolean, icon: React.ReactNode, label: string }) {
-   if (!active) return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-dashed border-slate-200 text-slate-300 text-[10px] font-bold uppercase grayscale">
-         {icon} {label}
-      </div>
-   )
+function FeaturePill({ active, icon, label }: { active: boolean, icon: React.ReactNode, label: string }) {
    return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-50 border border-teal-100 text-teal-600 text-[10px] font-bold uppercase">
+      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${active ? 'bg-primary/5 border-primary/10 text-primary shadow-sm' : 'bg-slate-50 border-slate-100 text-slate-300 opacity-60'} text-[10px] font-black uppercase tracking-wider transition-colors`}>
          {icon} {label}
       </div>
    )
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusIndicator({ status }: { status: string }) {
   switch (status) {
     case 'completed':
       return (
-        <Badge variant="success" className="bg-teal-100/50 text-teal-700 border-teal-200 shadow-none px-3 py-1">
-          <CheckCircle2 className="w-3 h-3 mr-1.5" />
-          Ready
-        </Badge>
+        <div className="text-teal-500 bg-teal-50 p-2 rounded-xl border border-teal-100/50 shadow-sm" title="Ready">
+          <CheckCircle2 className="w-4 h-4" />
+        </div>
       )
     case 'processing':
       return (
-        <Badge variant="processing" className="bg-blue-50 text-blue-700 border-blue-100 shadow-none px-3 py-1">
-          <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
-          Analyzing
-        </Badge>
+        <div className="text-primary bg-primary/5 p-2 rounded-xl border border-primary/10 animate-pulse shadow-sm" title="Processing">
+          <Loader2 className="w-4 h-4 animate-spin" />
+        </div>
       )
     case 'failed':
       return (
-        <Badge variant="destructive" className="bg-red-50 text-red-700 border-red-100 shadow-none px-3 py-1">
-          <AlertCircle className="w-3 h-3 mr-1.5" />
-          Failed
-        </Badge>
+        <div className="text-red-500 bg-red-50 p-2 rounded-xl border border-red-100 shadow-sm" title="Error">
+          <AlertCircle className="w-4 h-4" />
+        </div>
       )
     default:
       return (
-        <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-slate-200 shadow-none px-3 py-1 font-bold">
-          <Clock className="w-3 h-3 mr-1.5" />
-          Queued
-        </Badge>
+        <div className="text-slate-400 bg-slate-50 p-2 rounded-xl border border-slate-100" title="Queued">
+          <Clock className="w-4 h-4" />
+        </div>
       )
   }
 }

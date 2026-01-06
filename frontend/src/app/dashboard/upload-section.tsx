@@ -6,7 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Sparkles, Zap, ShieldCheck } from 'lucide-react'
+import { Sparkles, Zap, ShieldCheck, Fingerprint, Cpu } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export function UploadSection() {
   const [file, setFile] = useState<File | null>(null)
@@ -45,7 +51,6 @@ export function UploadSection() {
 
       if (dbError) throw dbError
 
-      // Trigger AI Processing
       const materialData = await supabase
         .from('materials')
         .select('id')
@@ -72,57 +77,63 @@ export function UploadSection() {
   }
 
   return (
-    <Card className="w-full bg-white border-none shadow-2xl rounded-[2rem] overflow-hidden group">
-      <div className="bg-primary/5 p-4 border-b border-primary/10 flex items-center justify-between px-8">
-         <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Secure Channel Ready</span>
-         </div>
-         <ShieldCheck className="w-4 h-4 text-primary/40" />
-      </div>
-      <CardContent className="p-10 space-y-8">
-        <FileUpload 
-          onFileSelect={setFile} 
-          loading={uploading}
-        />
-        
-        <div className="flex flex-col sm:flex-row gap-4 items-center">
-           <Button 
-             className="w-full h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 transition-all active:scale-95 group" 
-             disabled={!file || uploading}
-             onClick={handleUpload}
-           >
-             {uploading ? (
-               <span className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 animate-bounce fill-current" /> Initializing AI...
-               </span>
-             ) : (
-               <span className="flex items-center gap-2">
-                  Start AI Transformation <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-               </span>
-             )}
-           </Button>
-           {file && !uploading && (
-             <Button variant="ghost" className="h-14 px-8 rounded-2xl font-bold text-slate-400 hover:text-slate-600" onClick={() => setFile(null)}>
-                Cancel
-             </Button>
-           )}
+    <TooltipProvider>
+      <Card className="glass-card w-full border-none shadow-[0_32px_64px_-15px_rgba(0,0,0,0.1)] rounded-[3rem] overflow-hidden group">
+        <div className="bg-primary p-6 flex items-center justify-between px-12">
+           <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                 <Cpu className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex flex-col">
+                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">AI Core v3</span>
+                 <span className="text-xs font-bold text-white tracking-tight">Neural Processing Unit Ready</span>
+              </div>
+           </div>
+           <Fingerprint className="w-6 h-6 text-white/30" />
         </div>
+        <CardContent className="p-12 space-y-12">
+          <FileUpload 
+            onFileSelect={setFile} 
+            loading={uploading}
+          />
+          
+          <div className="flex items-center justify-center">
+             <Tooltip>
+                <TooltipTrigger asChild>
+                   <Button 
+                     className="h-24 w-24 rounded-[2rem] shadow-2xl shadow-primary/40 active:scale-90 transition-all p-0" 
+                     disabled={!file || uploading}
+                     onClick={handleUpload}
+                   >
+                     {uploading ? (
+                        <Cpu className="w-10 h-10 animate-spin fill-current" />
+                     ) : (
+                        <Zap className="w-10 h-10 fill-current" />
+                     )}
+                   </Button>
+                </TooltipTrigger>
+                <TooltipContent className="font-black uppercase tracking-widest text-[10px] py-2 px-4">Initialize AI Transformation</TooltipContent>
+             </Tooltip>
+          </div>
 
-        <div className="flex items-center justify-center gap-8 pt-2">
-           <HelperIcon icon={<Zap className="w-4 h-4" />} label="Instant Processing" />
-           <div className="w-1 h-1 rounded-full bg-slate-200" />
-           <HelperIcon icon={<ShieldCheck className="w-4 h-4" />} label="Private & Encrypted" />
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex items-center justify-center gap-12 pt-4">
+             <HelperItem icon={<Sparkles className="w-4 h-4" />} label="Smart Summary" />
+             <div className="w-1 h-1 rounded-full bg-slate-200" />
+             <HelperItem icon={<Cpu className="w-4 h-4" />} label="Deep Logic" />
+             <div className="w-1 h-1 rounded-full bg-slate-200" />
+             <HelperItem icon={<ShieldCheck className="w-4 h-4" />} label="AES-256" />
+          </div>
+        </CardContent>
+      </Card>
+    </TooltipProvider>
   )
 }
 
-function HelperIcon({ icon, label }: { icon: React.ReactNode, label: string }) {
+function HelperItem({ icon, label }: { icon: React.ReactNode, label: string }) {
    return (
-      <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-         {icon} {label}
+      <div className="flex flex-col items-center gap-3">
+         <div className="text-slate-300">{icon}</div>
+         <span className="text-[10px] font-black uppercase tracking-tighter text-slate-400">{label}</span>
       </div>
    )
 }

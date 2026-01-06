@@ -1,19 +1,16 @@
 import { requireRole } from '@/lib/auth/server'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { 
   Users, 
   FileStack, 
-  Activity, 
   ShieldAlert, 
   Database, 
-  Server,
-  ChevronRight,
   Search,
   ArrowUpRight,
   RefreshCw,
   LayoutDashboard,
-  Zap
+  Zap,
+  HardDrive
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,130 +27,110 @@ export default async function AdminPage() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-slate-50/50">
-        <div className="container mx-auto p-6 md:p-10 space-y-10 max-w-7xl">
-          {/* Admin Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="min-h-screen bg-slate-50/30 pb-20">
+        <div className="wide-container py-8 md:py-12 space-y-12">
+          {/* Master Admin Header */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-8 border-b border-slate-200">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                 <div className="p-1.5 rounded-lg bg-primary text-white">
-                    <ShieldAlert className="w-4 h-4" />
-                 </div>
-                 <span className="text-xs font-black uppercase tracking-wider text-primary">System Administrator</span>
+                 <ShieldAlert className="w-4 h-4 text-primary" />
+                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Security Override Active</span>
               </div>
-              <h1 className="text-4xl font-black tracking-tighter text-slate-900">Control <span className="text-primary/80">Center</span></h1>
-              <p className="text-muted-foreground font-medium">Monitor platform activity and manage users.</p>
+              <h1 className="text-4xl font-black tracking-tighter text-slate-900 leading-none">Command <span className="text-primary italic">Root.</span></h1>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 p-1.5 bg-white rounded-2xl border border-slate-200 shadow-sm">
                <Tooltip>
                   <TooltipTrigger asChild>
-                     <Button variant="outline" size="icon" className="rounded-xl bg-white h-12 w-12 shadow-sm border-slate-200">
-                        <Database className="w-5 h-5 text-slate-600" />
+                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl">
+                        <Database className="w-5 h-5 text-slate-500" />
                      </Button>
                   </TooltipTrigger>
-                  <TooltipContent>View System Logs</TooltipContent>
+                  <TooltipContent>Platform Logs</TooltipContent>
                </Tooltip>
 
                <Tooltip>
                   <TooltipTrigger asChild>
-                     <Button variant="outline" size="icon" className="rounded-xl bg-white h-12 w-12 shadow-sm border-slate-200">
-                        <RefreshCw className="w-5 h-5 text-slate-600" />
+                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl">
+                        <RefreshCw className="w-5 h-5 text-slate-500" />
                      </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Refresh System State</TooltipContent>
+                  <TooltipContent>Registry Sync</TooltipContent>
                </Tooltip>
+
+               <div className="h-6 w-[1px] bg-slate-200 mx-1" />
 
                <Tooltip>
                   <TooltipTrigger asChild>
-                     <Button className="rounded-xl h-12 w-12 shadow-lg shadow-primary/20 p-0" asChild>
+                     <Button className="h-10 w-10 rounded-xl shadow-lg shadow-primary/20 p-0 hover:scale-105 active:scale-95 transition-all" asChild>
                         <Link href="/dashboard">
                            <LayoutDashboard className="w-5 h-5" />
                         </Link>
                      </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Return to Dashboard</TooltipContent>
+                  <TooltipContent>Return to User View</TooltipContent>
                </Tooltip>
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <AdminStatCard icon={<Users className="text-blue-600" />} label="Total Students" value="1,284" trend="+12% this week" />
-            <AdminStatCard icon={<FileStack className="text-teal-600" />} label="Materials Processed" value="8,492" trend="+450 today" />
-            <AdminStatCard icon={<Activity className="text-purple-600" />} label="AI Success Rate" value="99.2%" trend="Stable" />
-            <AdminStatCard icon={<Server className="text-amber-600" />} label="Storage Usage" value="42.8 GB" trend="64% of quota" />
+          {/* Wide Stats Grid */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <AdminMiniCard icon={<Users className="w-5 h-5" />} label="Total Users" value="1,284" color="text-blue-600" />
+            <AdminMiniCard icon={<FileStack className="w-5 h-5" />} label="Assets Stored" value="8,492" color="text-teal-600" />
+            <AdminMiniCard icon={<Zap className="w-5 h-5" />} label="Sync Success" value="99.2%" color="text-primary" />
+            <AdminMiniCard icon={<HardDrive className="w-5 h-5" />} label="Data Volume" value="42GB" color="text-amber-600" />
           </div>
 
-          <div className="grid gap-10 lg:grid-cols-3">
-             {/* Activity Feed */}
-             <Card className="lg:col-span-2 border-none shadow-xl bg-white rounded-3xl overflow-hidden">
-                <CardHeader className="p-8 border-b border-slate-50">
-                   <div className="flex items-center justify-between">
+          <div className="grid gap-12 xl:grid-cols-3">
+             {/* Wide Intelligence Stream */}
+             <Card className="xl:col-span-2 border-none shadow-xl rounded-[2rem] overflow-hidden bg-white">
+                <CardHeader className="p-10 border-b border-slate-50 space-y-6">
+                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div className="space-y-1">
-                         <CardTitle className="text-xl font-black uppercase tracking-tight">Recent Activity</CardTitle>
-                         <CardDescription className="font-medium">Live document processing stream</CardDescription>
+                         <CardTitle className="text-xl font-black uppercase tracking-tight">Intelligence Stream</CardTitle>
+                         <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Real-time lifecycle monitoring</CardDescription>
                       </div>
-                      <div className="relative w-64">
-                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                         <Input placeholder="Search materials..." className="pl-10 rounded-xl bg-slate-50 border-none h-10 text-sm" />
+                      <div className="relative group">
+                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                         <Input placeholder="Filter registry..." className="h-11 pl-10 w-full md:w-72 rounded-xl bg-slate-50 border-none text-xs font-black uppercase" />
                       </div>
                    </div>
                 </CardHeader>
                 <CardContent className="p-0">
                    <div className="divide-y divide-slate-50">
-                      <ActivityRow name="Lecture_Note_01.pdf" user="alex.j@edu.com" status="completed" time="2m ago" />
-                      <ActivityRow name="Bio_Lab_Manual.txt" user="sarah.k@uni.edu" status="processing" time="5m ago" />
-                      <ActivityRow name="Economics_Final.pdf" user="admin@access.ai" status="completed" time="12m ago" />
-                      <ActivityRow name="Intro_to_Physics.pdf" user="mike.r@school.org" status="failed" time="1h ago" />
-                      <ActivityRow name="History_Summary.txt" user="jane.d@edu.com" status="completed" time="3h ago" />
+                      <MasterActivityRow name="Core_Syllabus_Bio.pdf" status="synced" time="2m ago" />
+                      <MasterActivityRow name="Lab_Report_Final.txt" status="live" time="5m ago" />
+                      <MasterActivityRow name="Prep_Notes_Eco.pdf" status="synced" time="12m ago" />
                    </div>
-                                    <div className="p-6 bg-slate-50/50 flex justify-center">
-                                       <Tooltip>
-                                          <TooltipTrigger asChild>
-                                             <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5 rounded-full h-10 w-10">
-                                                <ChevronRight className="w-6 h-6" />
-                                             </Button>
-                                          </TooltipTrigger>
-                                          <TooltipContent>View All Activity</TooltipContent>
-                                       </Tooltip>
-                                    </div>
-                                 </CardContent>
-                              </Card>
-                   
-                              {/* Quick Actions */}
-                              <div className="space-y-6">
-                                 <Card className="border-none shadow-xl bg-slate-900 text-white rounded-3xl p-8 space-y-6">
-                                    <h3 className="font-black text-lg uppercase tracking-tight">Platform Health</h3>
-                                    <div className="space-y-4">
-                                       <HealthBar label="API Response" percent={98} />
-                                       <HealthBar label="AI Throughput" percent={85} />
-                                       <HealthBar label="DB Connectivity" percent={100} />
-                                    </div>
-                                    <div className="pt-4 border-t border-white/10">
-                                       <Tooltip>
-                                          <TooltipTrigger asChild>
-                                             <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl font-bold h-14 shadow-lg shadow-primary/20">
-                                                <Zap className="w-5 h-5 mr-2 fill-current" /> Run Diagnostic
-                                             </Button>
-                                          </TooltipTrigger>
-                                          <TooltipContent>Start Full Platform Scan</TooltipContent>
-                                       </Tooltip>
-                                    </div>
-                                 </Card>
-                <Card className="border-none shadow-xl bg-white rounded-3xl p-8 space-y-6">
-                   <h3 className="font-black text-lg uppercase tracking-tight text-slate-800">Support Requests</h3>
-                   <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-4 group cursor-pointer">
-                         <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                            <Users className="w-5 h-5" />
-                         </div>
-                         <div className="flex-1">
-                            <p className="text-sm font-bold text-slate-800">New User Verification</p>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">4 Pending</p>
-                         </div>
-                         <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-primary" />
-                      </div>
+                   <div className="p-8 bg-slate-50/50 flex justify-center border-t border-slate-50">
+                      <Button variant="ghost" size="sm" className="text-primary font-black text-[10px] uppercase tracking-[0.2em] h-10 px-10 rounded-full hover:bg-white hover:shadow-md transition-all">Full Intelligence Archive</Button>
+                   </div>
+                </CardContent>
+             </Card>
+
+             {/* System Diagnostics Module */}
+             <div className="space-y-8">
+                <div className="bg-slate-950 rounded-[2.5rem] p-10 text-white space-y-10 shadow-2xl relative overflow-hidden group">
+                   <div className="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full blur-3xl -z-0 group-hover:scale-150 transition-all duration-1000" />
+                   <div className="space-y-2 relative z-10">
+                      <h3 className="text-sm font-black uppercase tracking-[0.3em] opacity-40">System Diagnostics</h3>
+                      <p className="text-xs font-medium text-slate-400 leading-relaxed max-w-[200px]">Real-time performance metrics across all neural nodes.</p>
+                   </div>
+                   <div className="space-y-8 relative z-10">
+                      <MasterHealth label="Gateway Response" percent={98} />
+                      <MasterHealth label="Neural Throughput" percent={85} />
+                   </div>
+                   <Button className="w-full bg-white text-slate-950 hover:bg-primary hover:text-white rounded-2xl font-black uppercase tracking-widest text-[10px] h-14 transition-all shadow-xl active:scale-95">
+                      Diagnostic Sweep
+                   </Button>
+                </div>
+
+                <Card className="rounded-[2.5rem] border-slate-200/60 p-10 space-y-8 bg-white shadow-sm">
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Security Verification</h3>
+                   <div className="space-y-5">
+                      <MasterVerification label="Identity Protocol" status="Secured" />
+                      <MasterVerification label="Bucket Isolation" status="Active" />
+                      <MasterVerification label="Encryption Flow" status="Verified" />
                    </div>
                 </Card>
              </div>
@@ -164,52 +141,55 @@ export default async function AdminPage() {
   )
 }
 
-function AdminStatCard({ icon, label, value, trend }: { icon: React.ReactNode, label: string, value: string, trend: string }) {
+function AdminMiniCard({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: string, color: string }) {
    return (
-      <Card className="border-none shadow-lg bg-white p-6 rounded-3xl space-y-4">
-         <div className="flex items-center justify-between">
-            <div className="p-3 rounded-2xl bg-slate-50">{icon}</div>
-            <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 border-none font-bold text-[10px]">{trend}</Badge>
-         </div>
+      <Card className="border-slate-200/60 shadow-sm p-8 rounded-[2rem] bg-white space-y-6 transition-all hover:shadow-md group">
+         <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform">{icon}</div>
          <div className="space-y-1">
-            <p className="text-sm font-bold text-slate-400 uppercase tracking-tight">{label}</p>
-            <p className="text-3xl font-black text-slate-900 tracking-tighter">{value}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{label}</p>
+            <p className={`text-3xl font-black tracking-tighter ${color}`}>{value}</p>
          </div>
       </Card>
    )
 }
 
-function ActivityRow({ name, user, status, time }: { name: string, user: string, status: string, time: string }) {
+function MasterActivityRow({ name, status, time }: { name: string, status: string, time: string }) {
    return (
-      <div className="p-6 flex items-center justify-between group hover:bg-slate-50/50 transition-colors">
-         <div className="flex items-center gap-4">
-            <div className={`w-2 h-2 rounded-full ${status === 'completed' ? 'bg-teal-500' : status === 'processing' ? 'bg-blue-500 animate-pulse' : 'bg-red-500'}`} />
+      <div className="p-8 flex items-center justify-between group hover:bg-slate-50/50 transition-all">
+         <div className="flex items-center gap-6">
+            <div className={`w-2 h-2 rounded-full ${status === 'synced' ? 'bg-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.5)]' : 'bg-primary animate-pulse shadow-[0_0_10px_rgba(var(--primary),0.5)]'}`} />
             <div>
-               <p className="text-sm font-bold text-slate-800 group-hover:text-primary transition-colors">{name}</p>
-               <p className="text-[10px] font-bold text-slate-400 uppercase">{user}</p>
+               <p className="text-base font-black text-slate-800 tracking-tight group-hover:text-primary transition-colors">{name}</p>
+               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-60">Hash Registry Match</p>
             </div>
          </div>
          <div className="flex items-center gap-6">
-            <Badge variant="outline" className={`capitalize font-bold text-[10px] border-none ${status === 'completed' ? 'bg-teal-50 text-teal-600' : 'bg-slate-50 text-slate-500'}`}>
-               {status}
-            </Badge>
-            <span className="text-xs font-bold text-slate-300 w-16 text-right">{time}</span>
-            <ChevronRight className="w-4 h-4 text-slate-200" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">{time}</span>
+            <ArrowUpRight className="w-4 h-4 text-slate-200 group-hover:text-primary transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
          </div>
       </div>
    )
 }
 
-function HealthBar({ label, percent }: { label: string, percent: number }) {
+function MasterHealth({ label, percent }: { label: string, percent: number }) {
    return (
-      <div className="space-y-2">
-         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest opacity-60 text-white">
+      <div className="space-y-3">
+         <div className="flex justify-between text-[9px] font-black uppercase tracking-[0.2em] opacity-40">
             <span>{label}</span>
             <span>{percent}%</span>
          </div>
-         <div className="h-1.5 bg-white/10 rounded-full w-full overflow-hidden">
-            <div className="h-full bg-primary transition-all duration-1000" style={{ width: `${percent}%` }} />
+         <div className="h-1 bg-white/10 rounded-full w-full overflow-hidden">
+            <div className="h-full bg-primary shadow-[0_0_15px_rgba(var(--primary),0.6)] transition-all duration-1000" style={{ width: `${percent}%` }} />
          </div>
+      </div>
+   )
+}
+
+function MasterVerification({ label, status }: { label: string, status: string }) {
+   return (
+      <div className="flex items-center justify-between group cursor-pointer">
+         <span className="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">{label}</span>
+         <span className="text-[9px] font-black uppercase text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-100/50">{status}</span>
       </div>
    )
 }

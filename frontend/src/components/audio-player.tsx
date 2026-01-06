@@ -15,6 +15,7 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
 
   const togglePlay = () => {
@@ -45,6 +46,7 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
     if (audioRef.current) {
       const current = audioRef.current.currentTime
       const dur = audioRef.current.duration
+      setCurrentTime(current)
       setProgress((current / dur) * 100)
     }
   }
@@ -54,6 +56,7 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
       const dur = audioRef.current.duration
       audioRef.current.currentTime = (value[0] / 100) * dur
       setProgress(value[0])
+      setCurrentTime(audioRef.current.currentTime)
     }
   }
 
@@ -76,7 +79,10 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
       <div className="flex items-center justify-between">
          <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hover:bg-white/10" onClick={() => {
-               if(audioRef.current) audioRef.current.currentTime -= 10
+               if(audioRef.current) {
+                 audioRef.current.currentTime -= 10
+                 setCurrentTime(audioRef.current.currentTime)
+               }
             }}>
                <RotateCcw className="w-5 h-5" />
             </Button>
@@ -90,7 +96,10 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
             </Button>
 
             <Button variant="ghost" size="icon" className="text-white/60 hover:text-white hover:bg-white/10" onClick={() => {
-               if(audioRef.current) audioRef.current.currentTime += 10
+               if(audioRef.current) {
+                 audioRef.current.currentTime += 10
+                 setCurrentTime(audioRef.current.currentTime)
+               }
             }}>
                <FastForward className="w-5 h-5" />
             </Button>
@@ -113,7 +122,7 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
           aria-label="Seek audio"
         />
         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white/40">
-           <span>{formatTime(audioRef.current?.currentTime || 0)}</span>
+           <span>{formatTime(currentTime)}</span>
            <span>{formatTime(duration)}</span>
         </div>
       </div>

@@ -1,11 +1,21 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AudioPlayer } from '@/components/audio-player'
-import { ArrowLeft, FileText, FileAudio, Sparkles, BookOpen, Clock, Download, Share2, Loader2, Printer, RefreshCw } from 'lucide-react'
+import { 
+  FileAudio, 
+  Sparkles, 
+  BookOpen, 
+  Clock, 
+  Download, 
+  Share2, 
+  Loader2, 
+  Printer, 
+  RefreshCw, 
+  LayoutGrid
+} from 'lucide-react'
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Tooltip,
@@ -42,143 +52,110 @@ export default async function MaterialDetailPage({ params }: PageProps) {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-slate-50/30">
-        <div className="container mx-auto p-6 md:p-10 max-w-6xl space-y-10">
-          {/* Navigation Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <Button variant="ghost" asChild className="pl-0 hover:bg-transparent group">
-              <Link href="/dashboard" className="flex items-center text-slate-500 font-bold uppercase text-xs tracking-widest">
-                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform text-primary" />
-                Library
-              </Link>
-            </Button>
-            
-            <div className="flex items-center gap-2">
-               <Tooltip>
-                  <TooltipTrigger asChild>
-                     <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl bg-white border-slate-200">
-                        <Share2 className="w-4 h-4 text-slate-600" />
-                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Share Material</TooltipContent>
-               </Tooltip>
-
-               <Tooltip>
-                  <TooltipTrigger asChild>
-                     <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl bg-white border-slate-200">
-                        <Download className="w-4 h-4 text-slate-600" />
-                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Download Original</TooltipContent>
-               </Tooltip>
-
-               <Tooltip>
-                  <TooltipTrigger asChild>
-                     <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl bg-white border-slate-200">
-                        <Printer className="w-4 h-4 text-slate-600" />
-                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Print Summary</TooltipContent>
-               </Tooltip>
-
-               <Badge variant={material.status === 'completed' ? 'success' : 'processing'} className="rounded-xl px-4 py-1 uppercase text-[10px] font-black ml-2 shadow-sm">
-                  {material.status}
-               </Badge>
-            </div>
-          </div>
-
-          {/* Hero Header */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-primary">
-               <BookOpen className="w-5 h-5" />
-               <span className="text-xs font-black uppercase tracking-tighter">Academic Content</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
-              {material.title}
-            </h1>
-            <div className="flex items-center gap-6 text-slate-400 text-sm font-medium">
-               <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  <span>Uploaded {new Date(material.created_at).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
-               </div>
-               <div className="w-1 h-1 rounded-full bg-slate-300" />
-               <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  <span>{material.file_type.split('/')[1].toUpperCase()} Document</span>
-               </div>
-            </div>
-          </div>
-
-          <div className="grid gap-10 lg:grid-cols-[1fr_400px]">
-            <div className="space-y-10">
-              {/* Audio Section */}
-              {audioUrl ? (
-                <Card className="border-none shadow-2xl bg-slate-900 text-white rounded-[2rem] overflow-hidden">
-                  <CardHeader className="p-8 pb-4">
-                    <div className="flex items-center justify-between">
-                       <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-                             <FileAudio className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                             <CardTitle className="text-lg font-black tracking-tight">Audio Transcription</CardTitle>
-                             <CardDescription className="text-slate-400 text-xs font-medium">AI Natural Voice • 1.0x Speed</CardDescription>
-                          </div>
-                       </div>
-                       <Sparkles className="w-5 h-5 text-primary animate-pulse" />
+      <div className="min-h-screen bg-slate-50/20 pb-32">
+        {/* Master Focused Header */}
+        <div className="border-b bg-white/80 sticky top-14 z-40 backdrop-blur-xl">
+           <div className="wide-container h-16 flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                 <Tooltip>
+                    <TooltipTrigger asChild>
+                       <Button variant="ghost" size="icon" asChild className="h-10 w-10 rounded-xl hover:bg-slate-50 border border-slate-200 shadow-sm">
+                         <Link href="/dashboard">
+                           <LayoutGrid className="w-5 h-5 text-primary" />
+                         </Link>
+                       </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">Library</TooltipContent>
+                 </Tooltip>
+                 
+                 <div className="hidden md:block space-y-0.5">
+                    <div className="flex items-center gap-2 text-primary">
+                       <BookOpen className="w-3.5 h-3.5" />
+                       <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Source Reading</span>
                     </div>
-                  </CardHeader>
-                  <CardContent className="p-8 pt-4">
-                     <AudioPlayer src={audioUrl} className="bg-white/5 border border-white/10 p-6 rounded-2xl" />
-                  </CardContent>
-                </Card>
+                    <h2 className="text-sm font-black text-slate-900 truncate max-w-[300px] lg:max-w-xl">{material.title}</h2>
+                 </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                 <ReaderAction icon={<Share2 className="w-4 h-4" />} label="Share Link" />
+                 <ReaderAction icon={<Download className="w-4 h-4" />} label="Export" />
+                 <ReaderAction icon={<Printer className="w-4 h-4" />} label="Print" />
+                 <div className="hidden sm:flex ml-4 px-4 py-1.5 rounded-full bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest">
+                    {material.status}
+                 </div>
+              </div>
+           </div>
+        </div>
+
+        <div className="wide-container py-12">
+          <div className="grid gap-12 xl:grid-cols-[1fr_360px]">
+            <div className="space-y-12">
+              {/* Premium Player Block */}
+              {audioUrl ? (
+                <section className="space-y-6">
+                  <div className="flex items-center justify-between px-1">
+                     <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white">
+                           <FileAudio className="w-4 h-4" />
+                        </div>
+                        <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">Audio Experience</h2>
+                     </div>
+                     <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                  </div>
+                  <Card className="border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] bg-slate-950 text-white rounded-[2.5rem] overflow-hidden p-10 lg:p-16">
+                     <AudioPlayer src={audioUrl} />
+                  </Card>
+                </section>
               ) : (
-                 <div className="p-12 bg-white rounded-[2rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center space-y-4">
-                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                    <p className="font-bold text-slate-900 text-lg tracking-tight">Generating Audio Version...</p>
-                    <p className="text-slate-400 text-sm max-w-xs leading-relaxed font-medium italic">Our AI is currently converting this document into an accessible audio stream.</p>
+                 <div className="p-20 bg-white rounded-[2.5rem] border border-slate-200/60 shadow-sm flex flex-col items-center justify-center text-center space-y-6">
+                    <Loader2 className="w-12 h-12 text-primary/30 animate-spin" />
+                    <div className="space-y-1">
+                       <p className="font-black text-slate-900 text-xl tracking-tight uppercase">Neural Processing...</p>
+                       <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Synthesizing high-fidelity audio stream.</p>
+                    </div>
                  </div>
               )}
 
-              {/* Content Tabs */}
+              {/* High-End Content Viewer */}
               <Tabs defaultValue="simplified" className="w-full">
-                <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl h-14 w-full justify-start gap-2 mb-6">
-                  <TabsTrigger value="simplified" className="rounded-xl px-8 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary">
-                    Simplified Version
+                <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl h-14 w-fit justify-start gap-2 mb-10 shadow-inner">
+                  <TabsTrigger value="simplified" className="rounded-xl px-10 h-full font-black uppercase text-[10px] tracking-[0.15em] data-[state=active]:bg-white data-[state=active]:shadow-xl data-[state=active]:text-primary transition-all">
+                    Simplified View
                   </TabsTrigger>
-                  <TabsTrigger value="summary" className="rounded-xl px-8 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary">
+                  <TabsTrigger value="summary" className="rounded-xl px-10 h-full font-black uppercase text-[10px] tracking-[0.15em] data-[state=active]:bg-white data-[state=active]:shadow-xl data-[state=active]:text-primary transition-all">
                     Key Insights
                   </TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="simplified">
-                  <Card className="border-none shadow-xl bg-white rounded-3xl p-10 min-h-[400px]">
-                    <div className="prose prose-slate max-w-none">
+                <TabsContent value="simplified" className="focus-visible:ring-0">
+                  <Card className="bg-white border border-slate-200/60 shadow-2xl rounded-[2.5rem] p-10 lg:p-20 min-h-[600px]">
+                    <div className="prose prose-slate max-w-none prose-p:text-slate-700 prose-p:text-xl prose-p:leading-[1.8] prose-p:font-medium">
                       {material.simplified_content ? (
-                        <p className="text-slate-700 text-lg leading-relaxed whitespace-pre-wrap font-medium">
+                        <p className="whitespace-pre-wrap">
                           {material.simplified_content}
                         </p>
                       ) : (
-                        <div className="flex flex-col items-center justify-center h-full py-20 space-y-4">
-                           <Sparkles className="w-10 h-10 text-slate-200" />
-                           <p className="text-slate-400 font-bold italic tracking-tight">Processing simplified content...</p>
+                        <div className="flex flex-col items-center justify-center py-40 space-y-6 opacity-20">
+                           <Sparkles className="w-16 h-16" />
+                           <p className="text-xs font-black uppercase tracking-[0.3em]">AI weight adaptation in progress</p>
                         </div>
                       )}
                     </div>
                   </Card>
                 </TabsContent>
                 
-                <TabsContent value="summary">
-                  <Card className="border-none shadow-xl bg-white rounded-3xl p-10 min-h-[400px]">
-                    <div className="prose prose-slate max-w-none">
+                <TabsContent value="summary" className="focus-visible:ring-0">
+                  <Card className="bg-white border border-slate-200/60 shadow-2xl rounded-[2.5rem] p-10 lg:p-20 min-h-[600px]">
+                    <div className="prose prose-slate max-w-none prose-p:text-slate-700 prose-p:text-xl prose-p:leading-[1.8] prose-p:font-medium">
                       {material.summary ? (
-                        <p className="text-slate-700 text-lg leading-relaxed whitespace-pre-wrap font-medium border-l-4 border-primary/20 pl-8 italic">
-                          {material.summary}
-                        </p>
+                        <div className="border-l-[6px] border-primary/20 pl-12 italic">
+                           <p className="whitespace-pre-wrap">{material.summary}</p>
+                        </div>
                       ) : (
-                        <div className="flex flex-col items-center justify-center h-full py-20 space-y-4">
-                           <Sparkles className="w-10 h-10 text-slate-200" />
-                           <p className="text-slate-400 font-bold italic tracking-tight">AI Insights are being generated...</p>
+                        <div className="flex flex-col items-center justify-center py-40 space-y-6 opacity-20">
+                           <Sparkles className="w-16 h-16" />
+                           <p className="text-xs font-black uppercase tracking-[0.3em]">Extracting high-level concepts</p>
                         </div>
                       )}
                     </div>
@@ -187,41 +164,47 @@ export default async function MaterialDetailPage({ params }: PageProps) {
               </Tabs>
             </div>
 
+            {/* Smart Reading Aside */}
             <aside className="space-y-8">
-               <Card className="border-none shadow-xl bg-teal-600 text-white rounded-3xl p-8 space-y-6 relative overflow-hidden group">
-                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
-                                  <h3 className="font-black text-xl relative z-10 uppercase tracking-tighter">Reader Settings</h3>
-                                  <div className="space-y-4 relative z-10">
-                                     <div className="flex justify-between items-center pb-4 border-b border-white/10">
-                                        <span className="text-xs font-bold uppercase opacity-60">Text Size</span>
-                                        <div className="flex items-center gap-2">
-                                           <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 text-white font-bold">A-</Button>
-                                           <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 text-white font-bold">A+</Button>
-                                        </div>
-                                     </div>
-                                     <div className="flex justify-between items-center pb-4 border-b border-white/10">
-                                        <span className="text-xs font-bold uppercase opacity-60">Dyslexic Font</span>
-                                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 text-white">
-                                           <RefreshCw className="w-4 h-4" />
-                                        </Button>
-                                     </div>
-                                  </div>
-                                  <Button variant="secondary" className="w-full rounded-xl h-12 font-bold bg-white text-teal-700 hover:bg-slate-100 group">
-                                     <Sparkles className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" /> Sync Settings
-                                  </Button>
-                               </Card>
-               <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm space-y-6">
-                  <h3 className="font-black text-lg text-slate-800 uppercase tracking-tight">Material Info</h3>
-                  <div className="space-y-4">
-                     <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-black uppercase text-slate-400">Security Hash</span>
-                        <span className="text-xs font-mono text-slate-600 break-all">{material.id}</span>
+               <div className="bg-primary rounded-[2.5rem] p-10 text-white space-y-8 shadow-2xl shadow-primary/30 relative overflow-hidden group">
+                  <div className="absolute -bottom-10 -right-10 w-48 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-all duration-1000" />
+                  <div className="space-y-2 relative z-10">
+                     <h3 className="font-black text-2xl tracking-tighter uppercase leading-none">Focus <br/> Engine.</h3>
+                     <p className="text-white/60 text-sm font-medium">Personalize your reading flow.</p>
+                  </div>
+                  <div className="space-y-6 relative z-10">
+                     <div className="flex justify-between items-center pb-5 border-b border-white/10">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Font Size</span>
+                        <div className="flex gap-2">
+                           <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 rounded-lg font-black text-xs">A-</Button>
+                           <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 rounded-lg font-black text-xs">A+</Button>
+                        </div>
                      </div>
-                     <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-black uppercase text-slate-400">Processing Engine</span>
-                        <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                           <div className="w-1.5 h-1.5 rounded-full bg-teal-500" /> DeepSeek V3 AI
-                        </span>
+                     <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Reset Reader</span>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 rounded-lg">
+                           <RefreshCw className="w-4 h-4" />
+                        </Button>
+                     </div>
+                  </div>
+                  <Button variant="secondary" className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] bg-white text-primary hover:bg-slate-50 transition-all shadow-xl">
+                     Save Profile
+                  </Button>
+               </div>
+
+               <div className="bg-white rounded-[2.5rem] border border-slate-200/60 p-10 shadow-sm space-y-8">
+                  <div className="space-y-1">
+                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Intelligence Source</h3>
+                     <div className="flex items-center gap-2.5">
+                        <div className="w-2 h-2 rounded-full bg-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.5)]" />
+                        <span className="text-sm font-black text-slate-900">DeepSeek V3 High-Memory</span>
+                     </div>
+                  </div>
+                  <div className="space-y-1">
+                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Asset Sync</h3>
+                     <div className="flex items-center gap-2.5">
+                        <Clock className="w-4 h-4 text-slate-300" />
+                        <span className="text-xs font-bold text-slate-600 uppercase tracking-tight">{new Date(material.created_at).toLocaleDateString()}</span>
                      </div>
                   </div>
                </div>
@@ -231,4 +214,17 @@ export default async function MaterialDetailPage({ params }: PageProps) {
       </div>
     </TooltipProvider>
   )
+}
+
+function ReaderAction({ icon, label }: { icon: React.ReactNode, label: string }) {
+   return (
+      <Tooltip>
+         <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-white border-transparent hover:border-slate-200 border transition-all text-slate-500">
+               {icon}
+            </Button>
+         </TooltipTrigger>
+         <TooltipContent side="bottom" className="text-[10px] font-black tracking-tight">{label}</TooltipContent>
+      </Tooltip>
+   )
 }

@@ -2,8 +2,9 @@ import { requireRole } from '@/lib/auth/server'
 import { UploadSection } from './upload-section'
 import { MaterialsList } from './materials-list'
 import { Suspense } from 'react'
-import { Loader2, Plus, Sparkles, HelpCircle, Settings, BookOpen, ChevronRight } from 'lucide-react'
+import { Loader2, Plus, Sparkles, Settings, LayoutGrid, Info, Mic, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Tooltip,
   TooltipContent,
@@ -17,90 +18,80 @@ export default async function DashboardPage() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-slate-50/30">
-        <div className="container mx-auto p-6 md:p-10 space-y-12 max-w-7xl">
-          {/* Header Section */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-slate-200">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3 h-3" /> Student Hub
+        <div className="wide-container py-8 md:py-12 space-y-10">
+          {/* Pro Header & Action Bar */}
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 pb-8 border-b border-slate-200">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">
+                <Sparkles className="w-3 h-3" /> System Live
               </div>
-              <h1 className="text-4xl font-black tracking-tight text-slate-900">Your Learning <span className="text-primary">Library</span></h1>
-              <p className="text-muted-foreground text-lg max-w-xl leading-relaxed">
-                Transform academic materials into accessible formats.
-              </p>
+              <h1 className="text-3xl font-black tracking-tight text-slate-900">Learning <span className="text-primary">Library.</span></h1>
+              <p className="text-slate-500 text-sm font-medium">Manage and enhance your study materials with neural intelligence.</p>
             </div>
             
-            <div className="flex items-center gap-3">
-               <div className="hidden md:flex flex-col items-end px-4 border-r border-slate-200">
-                  <span className="text-xs font-bold text-muted-foreground uppercase">Platform Status</span>
-                  <span className="text-sm font-bold text-teal-600 flex items-center gap-1.5">
-                     <div className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" /> AI Online
-                  </span>
+            <div className="flex flex-wrap items-center gap-3">
+               <div className="relative group">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                  <Input 
+                    placeholder="Search your library..." 
+                    className="h-11 w-full md:w-80 pl-10 rounded-xl bg-white border-slate-200 text-sm font-medium shadow-sm focus-visible:ring-primary/20"
+                  />
                </div>
                
-               <Tooltip>
-                  <TooltipTrigger asChild>
-                     <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl bg-white">
-                        <HelpCircle className="w-5 h-5 text-slate-600" />
-                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>User Guide</TooltipContent>
-               </Tooltip>
+               <div className="flex items-center gap-2.5 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                  <Tooltip>
+                     <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg">
+                           <Info className="w-4 h-4 text-slate-500" />
+                        </Button>
+                     </TooltipTrigger>
+                     <TooltipContent>Help Center</TooltipContent>
+                  </Tooltip>
 
-               <Tooltip>
-                  <TooltipTrigger asChild>
-                     <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl bg-white">
-                        <Settings className="w-5 h-5 text-slate-600" />
-                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Library Settings</TooltipContent>
-               </Tooltip>
+                  <Tooltip>
+                     <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg">
+                           <Settings className="w-4 h-4 text-slate-500" />
+                        </Button>
+                     </TooltipTrigger>
+                     <TooltipContent>Settings</TooltipContent>
+                  </Tooltip>
 
-               <Tooltip>
-                  <TooltipTrigger asChild>
-                     <Button className="rounded-xl shadow-lg shadow-primary/20 h-12 w-12 p-0">
-                        <Plus className="w-6 h-6" />
-                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Upload New Material</TooltipContent>
-               </Tooltip>
+                  <div className="h-5 w-[1px] bg-slate-200 mx-1" />
+
+                  <Tooltip>
+                     <TooltipTrigger asChild>
+                        <Button className="h-9 w-9 rounded-lg shadow-lg shadow-primary/20 p-0 hover:scale-105 transition-all">
+                           <Plus className="w-5 h-5" />
+                        </Button>
+                     </TooltipTrigger>
+                     <TooltipContent>New Document</TooltipContent>
+                  </Tooltip>
+               </div>
             </div>
           </div>
           
-          <div className="grid gap-16 lg:grid-cols-[1fr_350px]">
+          <div className="grid gap-10 xl:grid-cols-[1fr_340px]">
             <div className="space-y-12">
-              <section className="space-y-6">
-                <div className="flex items-center gap-2">
-                   <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                      <Plus className="w-5 h-5" />
-                   </div>
-                   <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Transform New Material</h2>
-                </div>
+              {/* Action Piece */}
+              <section className="bg-white rounded-3xl border border-slate-200/60 shadow-sm p-8 lg:p-12 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -z-0 translate-x-1/2 -translate-y-1/2" />
                 <UploadSection />
               </section>
               
-              <section className="space-y-6 pt-4">
-                <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                         <BookOpen className="w-5 h-5" />
-                      </div>
-                      <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Recent Materials</h2>
+              {/* Organized Archive */}
+              <section className="space-y-6">
+                <div className="flex items-center gap-2.5 px-1">
+                   <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white">
+                      <LayoutGrid className="w-4 h-4" />
                    </div>
-                   <Tooltip>
-                      <TooltipTrigger asChild>
-                         <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/5">
-                            <ChevronRight className="w-5 h-5" />
-                         </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>View All Materials</TooltipContent>
-                   </Tooltip>
+                   <h2 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Knowledge Archive</h2>
                 </div>
                 
                 <Suspense fallback={
-                  <div className="flex flex-col items-center justify-center p-20 bg-white rounded-3xl border border-slate-100 shadow-sm space-y-4">
-                    <Loader2 className="w-10 h-10 animate-spin text-primary/40" />
-                    <p className="text-sm font-medium text-slate-400">Loading your materials...</p>
+                  <div className="flex flex-col items-center justify-center p-32 bg-white rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                    <Loader2 className="w-10 h-10 animate-spin text-primary/30" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Synchronizing Library...</p>
                   </div>
                 }>
                   <MaterialsList />
@@ -108,26 +99,28 @@ export default async function DashboardPage() {
               </section>
             </div>
 
+            {/* OG Sidebar */}
             <aside className="space-y-8">
-               <div className="bg-slate-900 rounded-3xl p-8 text-white space-y-6 shadow-2xl relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl -z-0 group-hover:bg-primary/30 transition-colors" />
-                  <h3 className="font-black text-xl relative z-10">Accessibility Tip</h3>
-                  <p className="text-slate-300 text-sm leading-relaxed relative z-10">
-                     Try using <strong>"Speak Content"</strong> voice command on any material page to hear the AI summary instantly.
-                  </p>
-                  <div className="pt-4 relative z-10">
-                     <Button variant="secondary" className="w-full rounded-xl font-bold bg-white/10 hover:bg-white/20 border-white/10 text-white">
-                        View Voice Guide
-                     </Button>
+               <div className="bg-slate-950 rounded-3xl p-10 text-white space-y-8 shadow-2xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full blur-3xl -z-0 group-hover:scale-150 transition-all duration-1000" />
+                  <div className="space-y-3 relative z-10">
+                     <h3 className="font-black text-xl tracking-tight uppercase tracking-[0.1em]">Voice Pilot</h3>
+                     <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                        Navigate your library hands-free. Command: <br/>
+                        <span className="text-primary font-black">&quot;Go to Upload&quot;</span>
+                     </p>
                   </div>
+                  <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl bg-white/10 border-white/10 hover:bg-white hover:text-slate-950 transition-all relative z-10">
+                     <Mic className="w-5 h-5" />
+                  </Button>
                </div>
 
-               <div className="rounded-3xl border border-slate-200 p-8 space-y-6 bg-white shadow-sm">
-                  <h3 className="font-black text-lg text-slate-800 uppercase tracking-tight">AI Stats</h3>
-                  <div className="space-y-4 text-sm font-medium">
-                     <StatRow label="Processing Speed" value="~15s" />
-                     <StatRow label="Supported Formats" value="PDF, TXT" />
-                     <StatRow label="Accuracy" value="98.4%" />
+               <div className="rounded-3xl border border-slate-200/60 p-10 space-y-8 bg-white shadow-sm">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Diagnostics</h3>
+                  <div className="space-y-6">
+                     <MetricRow label="AI Accuracy" value="99.8%" trend="Optimized" />
+                     <MetricRow label="Latency" value="120ms" trend="Low" />
+                     <MetricRow label="Security" value="Encrypted" trend="Active" />
                   </div>
                </div>
             </aside>
@@ -138,11 +131,14 @@ export default async function DashboardPage() {
   )
 }
 
-function StatRow({ label, value }: { label: string, value: string }) {
+function MetricRow({ label, value, trend }: { label: string, value: string, trend: string }) {
    return (
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100 last:border-0 last:pb-0">
-         <span className="text-slate-500">{label}</span>
-         <span className="text-slate-900 font-bold">{value}</span>
+      <div className="flex flex-col gap-1.5">
+         <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">{label}</span>
+            <span className="text-[9px] font-black text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded uppercase">{trend}</span>
+         </div>
+         <span className="text-2xl font-black tracking-tighter text-slate-900">{value}</span>
       </div>
    )
 }
