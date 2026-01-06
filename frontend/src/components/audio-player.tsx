@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Play, Pause, Volume2, VolumeX, RotateCcw, FastForward } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
@@ -17,6 +17,14 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
   const [progress, setProgress] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
+
+  // Load and apply saved playback speed
+  useEffect(() => {
+    const savedVoiceSpeed = localStorage.getItem('accesslearn_voice_speed')
+    if (savedVoiceSpeed && audioRef.current) {
+      audioRef.current.playbackRate = parseFloat(savedVoiceSpeed)
+    }
+  }, [src])
 
   const togglePlay = () => {
     if (audioRef.current) {

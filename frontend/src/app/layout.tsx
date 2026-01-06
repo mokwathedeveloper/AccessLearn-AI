@@ -28,6 +28,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const contrast = localStorage.getItem('accesslearn_contrast');
+                  const textSize = localStorage.getItem('accesslearn_text_size');
+                  if (contrast === 'high-contrast') document.documentElement.classList.add('high-contrast');
+                  if (textSize === 'large') document.documentElement.style.fontSize = '18px';
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col build-v2-active`}
       >
