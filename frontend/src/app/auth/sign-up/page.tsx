@@ -79,6 +79,18 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="space-y-1.5">
+                  <Label htmlFor="admission_number" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Admission Number</Label>
+                  <Input 
+                    id="admission_number" 
+                    name="admission_number" 
+                    type="text" 
+                    placeholder="UG/2026/001" 
+                    required 
+                    className="h-11 bg-slate-50 border-slate-100 focus:bg-white rounded-xl text-sm font-medium transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
                   <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email</Label>
                   <Input 
                     id="email" 

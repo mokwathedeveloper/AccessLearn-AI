@@ -31,6 +31,7 @@ export async function signup(formData: FormData) {
   const role = (formData.get('role') as string) || 'student'
   const full_name = formData.get('full_name') as string
   const institution = formData.get('institution') as string
+  const admission_number = formData.get('admission_number') as string
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -41,6 +42,7 @@ export async function signup(formData: FormData) {
         role: role,
         full_name: full_name,
         institution: institution,
+        admission_number: admission_number,
       },
     },
   })
