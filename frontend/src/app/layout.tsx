@@ -4,6 +4,7 @@ import "./globals.css";
 import { VoiceNavigator } from "@/components/voice-navigator";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { SkipToContent } from "@/components/skip-to-content";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +31,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
+        <SkipToContent />
         <Navbar />
-        <main className="flex-1">
+        <main id="main-content" className="flex-1" tabIndex={-1}>
           {children}
         </main>
         <Footer />
