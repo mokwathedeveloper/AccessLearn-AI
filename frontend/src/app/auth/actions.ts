@@ -33,12 +33,13 @@ export async function signup(formData: FormData) {
   const full_name = formData.get('full_name') as string
   const institution = formData.get('institution') as string
   const admission_number = formData.get('admission_number') as string
+  const staff_number = formData.get('staff_number') as string
 
   if (password !== confirmPassword) {
     redirect('/auth/error?message=passwords-do-not-match')
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -48,6 +49,7 @@ export async function signup(formData: FormData) {
         full_name: full_name,
         institution: institution,
         admission_number: admission_number,
+        staff_number: staff_number,
       },
     },
   })
@@ -56,6 +58,12 @@ export async function signup(formData: FormData) {
     redirect(`/auth/error?message=${encodeURIComponent(error.message)}`)
   }
 
+  // If a session was created (e.g. email confirmation is disabled), 
+  // sign out to force manual login as requested by the user.
+  if (data?.session) {
+    await supabase.auth.signOut()
+  }
+
   revalidatePath('/', 'layout')
-  redirect('/')
+  redirect('/auth/sign-in?message=signup-success')
 }

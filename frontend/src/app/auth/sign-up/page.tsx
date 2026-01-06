@@ -79,12 +79,14 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="admission_number" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Admission Number</Label>
+                  <Label htmlFor={role === 'admin' ? "staff_number" : "admission_number"} className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
+                    {role === 'admin' ? "Staff Number" : "Admission Number"}
+                  </Label>
                   <Input 
-                    id="admission_number" 
-                    name="admission_number" 
+                    id={role === 'admin' ? "staff_number" : "admission_number"} 
+                    name={role === 'admin' ? "staff_number" : "admission_number"} 
                     type="text" 
-                    placeholder="UG/2026/001" 
+                    placeholder={role === 'admin' ? "STF/2026/001" : "UG/2026/001"} 
                     required 
                     className="h-11 bg-slate-50 border-slate-100 focus:bg-white rounded-xl text-sm font-medium transition-all"
                   />

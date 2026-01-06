@@ -4,10 +4,17 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-export default function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = await searchParams
+  const isSignupSuccess = params.message === 'signup-success'
+
   return (
     <TooltipProvider>
       <div className="flex items-center justify-center min-h-[calc(100vh-56px)] bg-slate-50/50 px-4">
@@ -31,7 +38,15 @@ export default function SignInPage() {
               Resume Your Learning Flow
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-8 p-8 pt-4">
+          <CardContent className="grid gap-6 p-8 pt-4">
+            {isSignupSuccess && (
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 mb-2">
+                <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                <p className="text-xs font-semibold leading-tight">
+                  Account created successfully! Please sign in to continue.
+                </p>
+              </div>
+            )}
             <form action={login} className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-1.5">

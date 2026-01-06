@@ -65,7 +65,7 @@ export function UserNav({ email, role }: { email: string, role: string }) {
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuItem className="cursor-pointer py-3 rounded-lg focus:bg-primary/5 group">
+        <DropdownMenuItem onClick={() => router.push('/dashboard')} className="cursor-pointer py-3 rounded-lg focus:bg-primary/5 group">
           <User className="mr-3 h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
           <span className="font-medium">Profile</span>
         </DropdownMenuItem>
