@@ -1,12 +1,43 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AiService } from './ai.service';
+import { ConfigService } from '@nestjs/config';
+
+// Mock OpenAI
+jest.mock('openai', () => {
+  return jest.fn().mockImplementation(() => ({
+    chat: {
+      completions: {
+        create: jest.fn().mockResolvedValue({
+          choices: [
+            {
+              message: {
+                content: JSON.stringify({
+                  summary: 'AI-generated summary',
+                  simplified: 'Simplified version',
+                }),
+              },
+            },
+          ],
+        }),
+      },
+    },
+  }));
+});
 
 describe('AiService', () => {
   let service: AiService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AiService],
+      providers: [
+        AiService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockReturnValue('test-key'),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<AiService>(AiService);
@@ -23,14 +54,13 @@ describe('AiService', () => {
 
       expect(result).toHaveProperty('summary');
       expect(result).toHaveProperty('simplified');
-      expect(result.summary).toContain('AI-generated summary');
+      expect(result.summary).toBe('AI-generated summary');
     });
   });
 
   describe('generateSpeech', () => {
     it('should return a buffer', async () => {
-      const text = 'This is a test text for speech generation.';
-      const result = await service.generateSpeech(text);
+      const result = await service.generateSpeech();
 
       expect(result).toBeInstanceOf(Buffer);
     });

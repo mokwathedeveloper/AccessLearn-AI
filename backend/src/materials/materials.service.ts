@@ -4,6 +4,7 @@ import {
   SupabaseClient,
   PostgrestError,
 } from '@supabase/supabase-js';
+import { ConfigService } from '@nestjs/config';
 import { AiService } from '../ai/ai.service';
 // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
 const pdf = require('pdf-parse');
@@ -26,11 +27,22 @@ export class MaterialsService {
   private readonly logger = new Logger(MaterialsService.name);
   private supabase: SupabaseClient;
 
-  constructor(private readonly aiService: AiService) {
-    this.supabase = createClient(
-      process.env.SUPABASE_URL || '',
-      process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-    ) as SupabaseClient;
+  constructor(
+    private readonly aiService: AiService,
+    private readonly configService: ConfigService,
+  ) {
+    const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
+    const supabaseKey = this.configService.get<string>(
+      'SUPABASE_SERVICE_ROLE_KEY',
+    );
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error(
+        'SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not defined in environment variables',
+      );
+    }
+
+    this.supabase = createClient(supabaseUrl, supabaseKey) as SupabaseClient;
   }
 
   async processMaterial(materialId: string) {

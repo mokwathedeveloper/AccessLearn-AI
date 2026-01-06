@@ -1,26 +1,33 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
+import { ConfigService } from '@nestjs/config';
+import OpenAI from 'openai';
 
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
-  private genAI: GoogleGenerativeAI;
-  private model: GenerativeModel;
+  private openai: OpenAI;
 
-  constructor() {
-    const apiKey = process.env.GOOGLE_GENAI_API_KEY || '';
-    this.genAI = new GoogleGenerativeAI(apiKey);
-    // Use gemini-1.5-flash for speed and cost-efficiency in hackathon context
-    this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  constructor(private readonly configService: ConfigService) {
+    const apiKey = this.configService.get<string>('DEEPSEEK_API_KEY') || '';
+    this.openai = new OpenAI({
+      apiKey: apiKey,
+      baseURL: 'https://openrouter.ai/api/v1',
+      defaultHeaders: {
+        'HTTP-Referer': 'https://github.com/mokwathedeveloper/AccessLearn-AI', // Optional, for OpenRouter rankings
+        'X-Title': 'AccessLearn AI', // Optional
+      },
+    });
   }
 
   /**
-   * Real AI Summarization and Simplification using Google Gemini.
+   * Real AI Summarization and Simplification using DeepSeek AI via OpenRouter.
    */
   async summarize(
     text: string,
   ): Promise<{ summary: string; simplified: string }> {
-    this.logger.log('Calling Gemini AI for summarization...');
+    this.logger.log(
+      'Calling DeepSeek AI (via OpenRouter) for summarization...',
+    );
 
     const prompt = `
       You are an expert accessibility educator. I will provide you with academic lecture material.
@@ -33,16 +40,21 @@ export class AiService {
     `;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = result.response;
-      const responseText = response.text();
+      const response = await this.openai.chat.completions.create({
+        model: 'deepseek/deepseek-chat',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
+      });
+
+      const responseText = response.choices[0].message.content;
+
+      if (!responseText) {
+        throw new Error('DeepSeek returned an empty response.');
+      }
 
       // Attempt to parse JSON from the response
       try {
-        // Clean up markdown if AI wrapped it in ```json
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        const jsonStr = jsonMatch ? jsonMatch[0] : responseText;
-        const parsed = JSON.parse(jsonStr) as {
+        const parsed = JSON.parse(responseText) as {
           summary?: string;
           simplified?: string;
         };
@@ -56,14 +68,14 @@ export class AiService {
             'Simplification succeeded but format was unexpected.',
         };
       } catch (parseError) {
-        this.logger.error('Failed to parse Gemini JSON response', parseError);
+        this.logger.error('Failed to parse DeepSeek JSON response', parseError);
         return {
           summary: responseText.substring(0, 300),
           simplified: responseText,
         };
       }
     } catch (error) {
-      this.logger.error('Gemini API call failed', error);
+      this.logger.error('DeepSeek API call failed', error);
       throw new Error('AI processing failed. Please check your API key.');
     }
   }

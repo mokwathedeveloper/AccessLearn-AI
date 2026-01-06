@@ -22,6 +22,13 @@ AccessLearn AI is an AI-powered accessibility platform designed to help students
 
 ## 🏃 Getting Started
 
+### 🔰 New to Development?
+**Start here**: [📖 Beginner Setup Guide](./BEGINNER-SETUP.md) - Step-by-step instructions for beginners
+
+**Quick setup**: Run `./setup-config.sh` to configure your environment files interactively
+
+### 🚀 Experienced Developer?
+
 ### Prerequisites
 
 - Node.js 20+
@@ -39,7 +46,7 @@ AccessLearn AI is an AI-powered accessibility platform designed to help students
    ```bash
    cd backend
    cp .env.example .env
-   # Fill in your SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
+   # Fill in your SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and GOOGLE_GENAI_API_KEY
    npm install
    ```
 
@@ -47,7 +54,7 @@ AccessLearn AI is an AI-powered accessibility platform designed to help students
    ```bash
    cd ../frontend
    cp .env.example .env.local
-   # Fill in NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+   # Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, and NEXT_PUBLIC_BACKEND_URL
    npm install
    ```
 
@@ -71,6 +78,16 @@ AccessLearn AI is an AI-powered accessibility platform designed to help students
 - **Quality**: Adheres to strict TypeScript and ESLint rules.
 
 ## 📄 Documentation
+
+### 🔰 For Beginners
+- [📖 Beginner Setup Guide](./BEGINNER-SETUP.md) - Complete step-by-step setup
+- [📋 Setup Checklist](./SETUP-CHECKLIST.md) - Track your progress
+- [🔧 Troubleshooting Guide](./TROUBLESHOOTING.md) - Fix common issues
+
+### 🚀 For Developers
+- [📦 Deployment Guide](./DEPLOYMENT.md) - Production deployment
+- [✅ Production Checklist](./PRODUCTION-CHECKLIST.md) - Pre-deployment verification
+- [Feature Documentation](./docs) - Detailed technical docs
 
 Detailed documentation for each feature can be found in the [`/docs`](./docs) folder.
 
