@@ -113,7 +113,7 @@ export class MaterialsService {
       const { summary, simplified } = await this.aiService.summarize(text);
 
       // 5. Generate Audio (TTS)
-      const audioBuffer = await this.aiService.generateSpeech();
+      const audioBuffer = await this.aiService.generateSpeech(summary);
 
       // 6. Upload Audio to Storage
       const userFolder = material.file_url.split('/')[0];

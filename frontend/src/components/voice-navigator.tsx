@@ -98,9 +98,19 @@ export function VoiceNavigator() {
     } else if (cmd.includes('back')) {
       router.back()
     } else if (cmd.includes('read') || cmd.includes('speak')) {
-      const content = document.getElementById('main-content')?.innerText
-      if (content && typeof window !== 'undefined' && window.speechSynthesis) {
-        const utterance = new SpeechSynthesisUtterance(content.substring(0, 500) + '...')
+      const contentElement = (document.querySelector('[role="main"]') || document.getElementById('main-content') || document.body) as HTMLElement
+      const textToRead = contentElement.innerText.substring(0, 2000) // Increase limit
+      
+      if (textToRead && typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel() // Stop any current speech
+        const utterance = new SpeechSynthesisUtterance(textToRead)
+        
+        // Load voice speed from localStorage if available
+        const savedSpeed = localStorage.getItem('accesslearn_voice_speed')
+        if (savedSpeed) {
+          utterance.rate = parseFloat(savedSpeed)
+        }
+        
         window.speechSynthesis.speak(utterance)
       }
     }

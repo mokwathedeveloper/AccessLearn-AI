@@ -5,7 +5,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
 
-interface SyncResult {
+export interface SyncResult {
   status: string;
   total?: number;
   repaired?: number;

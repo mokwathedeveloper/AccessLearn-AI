@@ -64,6 +64,44 @@ export async function signup(formData: FormData) {
     await supabase.auth.signOut()
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/auth/sign-in?message=signup-success')
-}
+    revalidatePath('/', 'layout')
+
+    redirect('/auth/sign-in?message=signup-success')
+
+  }
+
+  
+
+  export async function updatePreferences(preferences: any) {
+
+    const supabase = await createClient()
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+  
+
+    if (!user) return { error: 'Unauthorized' }
+
+  
+
+    const { error } = await supabase
+
+      .from('users')
+
+      .update({ preferences })
+
+      .eq('id', user.id)
+
+  
+
+    if (error) return { error: error.message }
+
+    
+
+    revalidatePath('/', 'layout')
+
+    return { success: true }
+
+  }
+
+  

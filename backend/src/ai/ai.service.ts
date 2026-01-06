@@ -81,13 +81,31 @@ export class AiService {
   }
 
   /**
-   * Placeholder for Text-to-Speech logic.
+   * Real Text-to-Speech implementation using OpenAI's TTS model.
    */
-  async generateSpeech(): Promise<Buffer> {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    this.logger.log('Generating placeholder speech buffer...');
-    return Buffer.from(
-      'Dummy MP3 content - real TTS requires Cloud API integration',
-    );
+  async generateSpeech(text: string): Promise<Buffer> {
+    this.logger.log('Generating neural audio via OpenAI TTS...');
+    
+    const openaiKey = this.configService.get<string>('OPENAI_API_KEY');
+    if (!openaiKey) {
+      this.logger.warn('OPENAI_API_KEY not found, falling back to dummy buffer');
+      return Buffer.from('Dummy MP3 content - API Key Missing');
+    }
+
+    const openaiReal = new OpenAI({ apiKey: openaiKey });
+
+    try {
+      const mp3 = await openaiReal.audio.speech.create({
+        model: 'tts-1',
+        voice: 'alloy',
+        input: text.substring(0, 4096), // OpenAI limit
+      });
+
+      const buffer = Buffer.from(await mp3.arrayBuffer());
+      return buffer;
+    } catch (error) {
+      this.logger.error('OpenAI TTS failed', error);
+      throw new Error('Audio generation failed.');
+    }
   }
 }

@@ -19,85 +19,28 @@ import {
   Trash2
 } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
+import { updatePreferences } from '../auth/actions'
+import { createClient } from '@/lib/supabase/client'
 
 type ContrastMode = 'standard' | 'high-contrast'
 type TextSize = 'default' | 'large'
 
 export function SettingsForm() {
-  // Initialize state from localStorage to avoid effect-based updates
-  const [contrastMode, setContrastMode] = useState<ContrastMode>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('accesslearn_contrast') as ContrastMode) || 'standard'
-    }
-    return 'standard'
-  })
-
-  const [textSize, setTextSize] = useState<TextSize>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('accesslearn_text_size') as TextSize) || 'default'
-    }
-    return 'default'
-  })
-
-  const [voiceSpeed, setVoiceSpeed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('accesslearn_voice_speed')
-      return saved ? [parseFloat(saved)] : [1.0]
-    }
-    return [1.0]
-  })
-
-  const [continuousListening, setContinuousListening] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('accesslearn_listening') === 'true'
-    }
-    return false
-  })
+  const [contrastMode, setContrastMode] = useState<ContrastMode>('standard')
+  const [textSize, setTextSize] = useState<TextSize>('default')
+  const [voiceSpeed, setVoiceSpeed] = useState([1.0])
+  const [continuousListening, setContinuousListening] = useState(false)
+  
+  const [emailNotifications, setEmailNotifications] = useState(true)
+  const [studyReminders, setStudyReminders] = useState(true)
+  const [materialsAlerts, setMaterialsAlerts] = useState(true)
+  const [twoFactor, setTwoFactor] = useState(false)
+  const [language, setLanguage] = useState('English (US)')
 
   const [activeTab, setActiveTab] = useState('appearance')
   const [isSaving, setIsSaving] = useState(false)
   const [hasSaved, setHasSaved] = useState(false)
-
-  // Notification states
-  const [emailNotifications, setEmailNotifications] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('accesslearn_email_notif')
-      return saved !== null ? saved === 'true' : true
-    }
-    return true
-  })
-
-  const [studyReminders, setStudyReminders] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('accesslearn_reminders')
-      return saved !== null ? saved === 'true' : true
-    }
-    return true
-  })
-
-  const [materialsAlerts, setMaterialsAlerts] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('accesslearn_alerts')
-      return saved !== null ? saved === 'true' : true
-    }
-    return true
-  })
-
-  // Privacy states
-  const [twoFactor, setTwoFactor] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('accesslearn_2fa') === 'true'
-    }
-    return false
-  })
-
-  // Language state
-  const [language, setLanguage] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('accesslearn_lang') || 'English (US)'
-    }
-    return 'English (US)'
-  })
+  const [loading, setLoading] = useState(true)
 
   const applySettings = useCallback(() => {
     const root = document.documentElement
@@ -114,33 +57,79 @@ export function SettingsForm() {
     }
   }, [contrastMode, textSize])
 
-  // Apply settings on mount if needed (for initial CSS classes)
+  // Load settings from Supabase on mount
   useEffect(() => {
-    applySettings()
-  }, [applySettings])
+    async function loadSettings() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('preferences')
+          .eq('id', user.id)
+          .single()
+        
+        if (profile?.preferences) {
+          const p = profile.preferences
+          if (p.contrast) setContrastMode(p.contrast)
+          if (p.textSize) setTextSize(p.textSize)
+          if (p.voiceSpeed) setVoiceSpeed([p.voiceSpeed])
+          if (p.listening !== undefined) setContinuousListening(p.listening)
+          if (p.emailNotif !== undefined) setEmailNotifications(p.emailNotif)
+          if (p.reminders !== undefined) setStudyReminders(p.reminders)
+          if (p.alerts !== undefined) setMaterialsAlerts(p.alerts)
+          if (p.twoFactor !== undefined) setTwoFactor(p.twoFactor)
+          if (p.lang) setLanguage(p.lang)
+        }
+      }
+      setLoading(false)
+    }
+    loadSettings()
+  }, [])
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (!loading) applySettings()
+  }, [applySettings, loading])
+
+  const handleSave = async () => {
     setIsSaving(true)
     
-    setTimeout(() => {
-      localStorage.setItem('accesslearn_contrast', contrastMode)
-      localStorage.setItem('accesslearn_text_size', textSize)
-      localStorage.setItem('accesslearn_voice_speed', voiceSpeed[0].toString())
-      localStorage.setItem('accesslearn_listening', continuousListening.toString())
-      
-      localStorage.setItem('accesslearn_email_notif', emailNotifications.toString())
-      localStorage.setItem('accesslearn_reminders', studyReminders.toString())
-      localStorage.setItem('accesslearn_alerts', materialsAlerts.toString())
-      
-      localStorage.setItem('accesslearn_2fa', twoFactor.toString())
-      localStorage.setItem('accesslearn_lang', language)
-      
-      applySettings()
-      
-      setIsSaving(false)
+    const prefs = {
+      contrast: contrastMode,
+      textSize: textSize,
+      voiceSpeed: voiceSpeed[0],
+      listening: continuousListening,
+      emailNotif: emailNotifications,
+      reminders: studyReminders,
+      alerts: materialsAlerts,
+      twoFactor: twoFactor,
+      lang: language
+    }
+
+    // Save to localStorage for instant head-script access
+    localStorage.setItem('accesslearn_contrast', contrastMode)
+    localStorage.setItem('accesslearn_text_size', textSize)
+    localStorage.setItem('accesslearn_voice_speed', voiceSpeed[0].toString())
+
+    // Save to Database
+    const result = await updatePreferences(prefs)
+    
+    if (result.success) {
       setHasSaved(true)
       setTimeout(() => setHasSaved(false), 2000)
-    }, 800)
+    } else {
+      alert(`Error saving preferences: ${result.error}`)
+    }
+    
+    setIsSaving(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-20">
+        <Loader2 className="w-8 h-8 animate-spin text-primary/20" />
+      </div>
+    )
   }
 
   return (
@@ -399,6 +388,8 @@ export function SettingsForm() {
     </div>
   )
 }
+
+import { Loader2 } from 'lucide-react'
 
 function SettingsNavButton({ icon, label, active = false, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick: () => void }) {
    return (
