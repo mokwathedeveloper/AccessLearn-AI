@@ -2,7 +2,7 @@ import { requireRole } from '@/lib/auth/server'
 import { UploadSection } from './upload-section'
 import { MaterialsList } from './materials-list'
 import { Suspense } from 'react'
-import { Loader2, Plus, Sparkles, Settings, LayoutGrid, Info, Mic, Search, BookOpen } from 'lucide-react'
+import { Loader2, Plus, Sparkles, Settings, LayoutGrid, Info, Mic, Search, Clock, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -17,91 +17,110 @@ export default async function DashboardPage() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-slate-50/20 pb-20">
-        <div className="wide-grid py-10 lg:py-16 space-y-12">
-          {/* Master Dashboard Header */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-md bg-primary/5 text-primary text-[10px] font-black uppercase tracking-wider">
-                <Sparkles className="w-3 h-3" /> Core Engine Active
-              </div>
-              <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-950">Library Center</h1>
-              <p className="text-slate-500 text-sm font-medium">Coordinate your neural learning archive.</p>
+      <div className="min-h-screen bg-slate-50/50 pb-20">
+        <div className="app-container py-8 space-y-8">
+          {/* Senior Control Bar */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+            <div className="space-y-0.5">
+              <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                <LayoutGrid className="w-5 h-5 text-primary" />
+                Library Center
+              </h1>
+              <p className="text-xs font-medium text-slate-500">Manage and transform academic materials with AI.</p>
             </div>
             
-            <div className="flex flex-wrap items-center gap-3">
-               <div className="relative group mr-2">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-primary transition-colors" />
+            <div className="flex flex-wrap items-center gap-2">
+               <div className="relative group">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-primary transition-colors" />
                   <Input 
-                    placeholder="Search registry..." 
-                    className="h-10 w-full md:w-72 pl-9 rounded-xl bg-white border-slate-200 text-xs font-semibold focus-visible:ring-primary/10 shadow-sm"
+                    placeholder="Quick search..." 
+                    className="h-8 w-full md:w-64 pl-8 rounded-md bg-white border-slate-200 text-xs font-medium focus-visible:ring-primary/10 shadow-none"
                   />
                </div>
                
-               <div className="flex items-center gap-2.5 p-1 bg-white rounded-xl border border-slate-200 shadow-sm">
-                  <DashboardAction icon={<Info className="w-4 h-4" />} label="Platform Info" />
-                  <DashboardAction icon={<Settings className="w-4 h-4" />} label="Security Settings" />
-                  
-                  <div className="h-5 w-[1px] bg-slate-200 mx-1" />
+               <div className="h-4 w-[1px] bg-slate-200 mx-1" />
 
-                  <Tooltip>
-                     <TooltipTrigger asChild>
-                        <Button className="h-8 w-8 rounded-lg shadow-lg shadow-primary/20 p-0 hover:scale-105 active:scale-95 transition-all">
-                           <Plus className="w-4 h-4" />
-                        </Button>
-                     </TooltipTrigger>
-                     <TooltipContent side="bottom" className="text-[10px] font-bold">New Material</TooltipContent>
-                  </Tooltip>
+               <div className="flex items-center gap-1.5 p-1 bg-white rounded-lg border border-slate-200">
+                  <DashboardButton icon={<Info className="w-3.5 h-3.5" />} label="Guide" />
+                  <DashboardButton icon={<Settings className="w-3.5 h-3.5" />} label="Config" />
+                  <DashboardButton icon={<Plus className="w-3.5 h-3.5" />} label="Add" primary />
                </div>
             </div>
           </div>
           
-          <div className="grid gap-12 lg:grid-cols-[1fr_320px]">
-            <div className="space-y-16">
-              {/* Refined Action Module */}
-              <section className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-10 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-[80px] -z-0" />
+          <div className="grid gap-8 lg:grid-cols-[280px_1fr_300px] items-start">
+            {/* Left Rail: Status & Filters */}
+            <aside className="space-y-6 hidden lg:block">
+               <div className="space-y-4">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">System State</h3>
+                  <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-4">
+                     <StatusItem label="Neural Engine" value="Online" active />
+                     <StatusItem label="Storage Cloud" value="Connected" active />
+                     <StatusItem label="Encryption" value="Active" active />
+                  </div>
+               </div>
+
+               <div className="space-y-4">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Activity Stats</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                     <MiniStat label="Assets" value="12" />
+                     <MiniStat label="Minutes" value="124" />
+                  </div>
+               </div>
+            </aside>
+
+            {/* Main Area: Upload & Feed */}
+            <main className="space-y-8 min-w-0">
+              <section className="bg-white rounded-xl border border-slate-200 p-6 lg:p-8 relative overflow-hidden">
                 <UploadSection />
               </section>
               
-              {/* Balanced Archive Grid */}
-              <section className="space-y-8">
-                <div className="flex items-center gap-3 px-1">
-                   <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-xl">
-                      <LayoutGrid className="w-5 h-5" />
-                   </div>
-                   <h2 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Library Archive</h2>
+              <section className="space-y-4">
+                <div className="flex items-center justify-between px-1">
+                   <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Registry Feed</h2>
                 </div>
                 
                 <Suspense fallback={
-                  <div className="flex flex-col items-center justify-center p-32 bg-white rounded-2xl border border-slate-100 shadow-sm space-y-6">
-                    <Loader2 className="w-10 h-10 animate-spin text-primary/20" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">Synchronizing Data...</p>
+                  <div className="flex flex-col items-center justify-center p-20 bg-white rounded-xl border border-slate-100 space-y-4">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary/20" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-300">Synchronizing...</p>
                   </div>
                 }>
                   <MaterialsList />
                 </Suspense>
               </section>
-            </div>
+            </main>
 
-            {/* Sidebar Module */}
-            <aside className="space-y-8">
-               <div className="bg-slate-950 rounded-2xl p-10 text-white space-y-10 shadow-2xl relative overflow-hidden border border-slate-800">
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full blur-3xl -z-0 transition-transform duration-1000" />
-                  <div className="space-y-2 relative z-10">
-                     <h3 className="font-extrabold text-xl tracking-tight uppercase leading-none">Voice Pilot.</h3>
-                     <p className="text-slate-400 text-xs font-bold uppercase tracking-wider opacity-60 italic">Online & Ready</p>
+            {/* Right Rail: Intelligence & Tips */}
+            <aside className="space-y-6">
+               <div className="bg-slate-900 rounded-xl p-6 text-white space-y-6 shadow-lg border border-slate-800">
+                  <div className="space-y-1">
+                     <h3 className="font-bold text-sm leading-tight flex items-center gap-2">
+                        <Mic className="w-4 h-4 text-primary" />
+                        Voice Pilot
+                     </h3>
+                     <p className="text-slate-400 text-xs leading-relaxed">
+                        Say <span className="text-white font-bold">&quot;Read&quot;</span> to narrate.
+                     </p>
                   </div>
-                  <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl bg-white/5 border-white/10 hover:bg-white hover:text-slate-950 transition-all relative z-10">
-                     <Mic className="w-5 h-5" />
-                  </Button>
+                  <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                     <div className="h-full bg-primary w-1/3" />
+                  </div>
                </div>
 
-               <div className="rounded-2xl border border-slate-200/60 p-10 space-y-8 bg-white shadow-sm">
-                  <div className="space-y-6">
-                     <DashboardMetric label="Success Rate" value="99.2%" />
-                     <DashboardMetric label="Compute Time" value="12ms" />
-                     <DashboardMetric label="Storage" value="SOC2" />
+               <div className="rounded-xl border border-slate-200 p-6 space-y-6 bg-white shadow-sm">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Quick Config</h3>
+                  <div className="space-y-4">
+                     <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-medium">Auto-Sync</span>
+                        <div className="w-8 h-4 bg-primary/10 rounded-full relative">
+                           <div className="absolute right-1 top-1 w-2 h-2 bg-primary rounded-full" />
+                        </div>
+                     </div>
+                     <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-medium">Neural Cache</span>
+                        <span className="font-bold text-slate-900">4.2MB</span>
+                     </div>
                   </div>
                </div>
             </aside>
@@ -112,12 +131,12 @@ export default async function DashboardPage() {
   )
 }
 
-function DashboardAction({ icon, label }: { icon: React.ReactNode, label: string }) {
+function DashboardButton({ icon, label, primary }: { icon: React.ReactNode, label: string, primary?: boolean }) {
    return (
       <Tooltip>
          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-slate-50">
-               <div className="text-slate-400 hover:text-primary transition-colors">{icon}</div>
+            <Button variant={primary ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-md transition-all">
+               {icon}
             </Button>
          </TooltipTrigger>
          <TooltipContent side="bottom" className="text-[10px] font-bold">{label}</TooltipContent>
@@ -125,11 +144,23 @@ function DashboardAction({ icon, label }: { icon: React.ReactNode, label: string
    )
 }
 
-function DashboardMetric({ label, value }: { label: string, value: string }) {
+function StatusItem({ label, value, active }: { label: string, value: string, active: boolean }) {
    return (
-      <div className="flex flex-col gap-1">
-         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{label}</span>
-         <span className="text-2xl font-extrabold tracking-tighter text-slate-900">{value}</span>
+      <div className="flex items-center justify-between">
+         <span className="text-xs text-slate-500 font-medium">{label}</span>
+         <div className="flex items-center gap-1.5">
+            {active && <div className="w-1 h-1 rounded-full bg-teal-500 animate-pulse" />}
+            <span className="text-xs font-bold text-slate-900">{value}</span>
+         </div>
+      </div>
+   )
+}
+
+function MiniStat({ label, value }: { label: string, value: string }) {
+   return (
+      <div className="p-3 bg-white border border-slate-200 rounded-lg space-y-0.5">
+         <p className="text-[9px] font-bold text-slate-400 uppercase">{label}</p>
+         <p className="text-lg font-bold text-slate-900 tracking-tight">{value}</p>
       </div>
    )
 }
