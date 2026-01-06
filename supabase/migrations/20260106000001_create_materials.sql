@@ -1,8 +1,13 @@
--- Create Enum for Material Status
-CREATE TYPE public.material_status AS ENUM ('pending', 'processing', 'completed', 'failed');
+-- 1. Create Enum for Material Status (with existence check)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'material_status') THEN
+        CREATE TYPE public.material_status AS ENUM ('pending', 'processing', 'completed', 'failed');
+    END IF;
+END$$;
 
--- Create Materials Table
-CREATE TABLE public.materials (
+-- 2. Create Materials Table
+CREATE TABLE IF NOT EXISTS public.materials (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
@@ -11,9 +16,7 @@ CREATE TABLE public.materials (
   status public.material_status NOT NULL DEFAULT 'pending',
   uploaded_by UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   
-  -- AI Generated Content (can be stored here or in separate tables, keeping here for simplicity for now or JSONB)
-  -- For modularity, we might want separate tables for 'summaries', 'audio_files', but for this hackathon scale, 
-  -- simple columns or JSONB is efficient. Let's use specific columns for URLs to keep it structured.
+  -- AI Generated Content
   audio_url TEXT,
   summary TEXT,
   simplified_content TEXT,
@@ -22,8 +25,8 @@ CREATE TABLE public.materials (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Enable RLS
+-- 3. Enable RLS
 ALTER TABLE public.materials ENABLE ROW LEVEL SECURITY;
 
--- Index for faster queries by user
-CREATE INDEX idx_materials_uploaded_by ON public.materials(uploaded_by);
+-- 4. Create Index for faster queries by user
+CREATE INDEX IF NOT EXISTS idx_materials_uploaded_by ON public.materials(uploaded_by);
