@@ -55,6 +55,30 @@ export default function SignUpPage() {
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
+                  <Label htmlFor="full_name" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Full Name</Label>
+                  <Input 
+                    id="full_name" 
+                    name="full_name" 
+                    type="text" 
+                    placeholder="John Doe" 
+                    required 
+                    className="h-11 bg-slate-50 border-slate-100 focus:bg-white rounded-xl text-sm font-medium transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="institution" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">University / Institution</Label>
+                  <Input 
+                    id="institution" 
+                    name="institution" 
+                    type="text" 
+                    placeholder="Global University" 
+                    required 
+                    className="h-11 bg-slate-50 border-slate-100 focus:bg-white rounded-xl text-sm font-medium transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
                   <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email</Label>
                   <Input 
                     id="email" 
