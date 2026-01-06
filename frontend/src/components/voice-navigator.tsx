@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Mic, MicOff } from 'lucide-react'
+import { Mic, MicOff, Sparkles, Volume2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -46,6 +46,8 @@ interface SpeechRecognition extends EventTarget {
   onresult: (event: SpeechRecognitionEvent) => void
   onspeechend: () => void
   onerror: (event: SpeechRecognitionErrorEvent) => void
+  onstart?: () => void
+  onend?: () => void
 }
 
 interface SpeechRecognitionConstructor {
@@ -61,6 +63,7 @@ export function VoiceNavigator() {
   const [isListening, setIsListening] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [supported, setSupported] = useState(false)
+  const recognitionRef = React.useRef<SpeechRecognition | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -69,6 +72,12 @@ export function VoiceNavigator() {
       if (win.webkitSpeechRecognition || win.SpeechRecognition) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setSupported(true)
+      }
+    }
+    
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort()
       }
     }
   }, [])
@@ -88,45 +97,70 @@ export function VoiceNavigator() {
       router.push('/')
     } else if (cmd.includes('back')) {
       router.back()
+    } else if (cmd.includes('read') || cmd.includes('speak')) {
+      const content = document.getElementById('main-content')?.innerText
+      if (content && typeof window !== 'undefined' && window.speechSynthesis) {
+        const utterance = new SpeechSynthesisUtterance(content.substring(0, 500) + '...')
+        window.speechSynthesis.speak(utterance)
+      }
     }
   }, [router])
 
   const toggleListening = () => {
     if (!supported) return
 
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+      setIsListening(false)
+      return
+    }
+
     const win = window as unknown as IWindow
     const SpeechRecognitionAPI = win.SpeechRecognition || win.webkitSpeechRecognition
     if (!SpeechRecognitionAPI) return
 
     const recognition = new SpeechRecognitionAPI()
+    recognitionRef.current = recognition
 
     recognition.continuous = false
     recognition.lang = 'en-US'
     recognition.interimResults = false
     recognition.maxAlternatives = 1
 
-    if (!isListening) {
-      recognition.start()
+    recognition.onstart = () => {
       setIsListening(true)
+      setTranscript('')
+    }
 
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
-        const lastResult = event.results[event.results.length - 1]
-        const text = lastResult[0].transcript
-        setTranscript(text)
-        handleCommand(text)
-        setIsListening(false)
-      }
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const lastResult = event.results[event.results.length - 1]
+      const text = lastResult[0].transcript
+      setTranscript(text)
+      handleCommand(text)
+    }
 
-      recognition.onspeechend = () => {
-        recognition.stop()
-        setIsListening(false)
-      }
+    recognition.onspeechend = () => {
+      recognition.stop()
+      setIsListening(false)
+    }
 
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      if (event.error !== 'no-speech') {
         console.error('Speech recognition error', event.error)
-        setIsListening(false)
       }
-    } else {
+      setIsListening(false)
+    }
+
+    recognition.onend = () => {
+      setIsListening(false)
+    }
+
+    try {
+      recognition.start()
+    } catch (e) {
+      console.error('Failed to start recognition:', e)
       setIsListening(false)
     }
   }
@@ -134,22 +168,27 @@ export function VoiceNavigator() {
   if (!supported) return null
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-2">
+    <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end space-y-4">
       {transcript && isListening && (
-        <div className="bg-black/80 text-white px-3 py-1 rounded-md text-sm mb-2 animate-in fade-in slide-in-from-bottom-2">
-          {transcript}...
+        <div className="bg-slate-900/90 backdrop-blur-md text-white px-6 py-3 rounded-2xl text-sm mb-2 shadow-2xl border border-white/10 animate-in fade-in slide-in-from-bottom-4 duration-500 font-bold tracking-tight">
+          <div className="flex items-center gap-3">
+             <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+             <span>{transcript}...</span>
+          </div>
         </div>
       )}
       <Button
         onClick={toggleListening}
         size="icon"
         className={cn(
-          "h-14 w-14 rounded-full shadow-lg transition-all duration-300",
-          isListening ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-blue-600 hover:bg-blue-700"
+          "h-16 w-16 rounded-3xl shadow-2xl transition-all duration-500 active:scale-90",
+          isListening 
+            ? "bg-red-500 hover:bg-red-600 ring-8 ring-red-500/20" 
+            : "bg-primary hover:bg-primary/90 ring-8 ring-primary/10 shadow-primary/40"
         )}
-        title="Voice Navigation (Try: 'Go to Dashboard', 'Upload', 'Back')"
+        title="Voice Navigation (Try: 'Go to Dashboard', 'Read Content', 'Back')"
       >
-        {isListening ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
+        {isListening ? <Mic className="h-7 w-7 animate-bounce" /> : <MicOff className="h-7 w-7" />}
       </Button>
     </div>
   )

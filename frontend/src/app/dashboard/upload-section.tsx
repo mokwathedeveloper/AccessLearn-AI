@@ -3,9 +3,10 @@
 import React, { useState } from 'react'
 import { FileUpload } from '@/components/file-upload'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { Sparkles, Zap, ShieldCheck } from 'lucide-react'
 
 export function UploadSection() {
   const [file, setFile] = useState<File | null>(null)
@@ -19,11 +20,9 @@ export function UploadSection() {
     const supabase = createClient()
 
     try {
-      // 1. Get current user
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Unauthorized')
 
-      // 2. Upload to Supabase Storage
       const fileExt = file.name.split('.').pop()
       const fileName = `${Math.random()}.${fileExt}`
       const filePath = `${user.id}/${fileName}`
@@ -34,7 +33,6 @@ export function UploadSection() {
 
       if (uploadError) throw uploadError
 
-      // 3. Insert into materials table
       const { error: dbError } = await supabase
         .from('materials')
         .insert({
@@ -47,7 +45,7 @@ export function UploadSection() {
 
       if (dbError) throw dbError
 
-      // 4. Trigger AI Processing via Backend
+      // Trigger AI Processing
       const materialData = await supabase
         .from('materials')
         .select('id')
@@ -55,8 +53,7 @@ export function UploadSection() {
         .single()
       
       if (materialData.data) {
-        // Replace with your actual backend URL in production
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/materials/process`, {
+        fetch('/api/materials/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ materialId: materialData.data.id }),
@@ -64,8 +61,7 @@ export function UploadSection() {
       }
 
       setFile(null)
-      router.refresh() // Refresh the page to show new materials in the list (once implemented)
-      alert('File uploaded successfully! Processing will begin shortly.')
+      router.refresh()
     } catch (error) {
       console.error('Upload failed:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
@@ -76,26 +72,57 @@ export function UploadSection() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Upload Lecture Material</CardTitle>
-        <CardDescription>
-          Upload your lecture slides or notes (PDF/TXT) to convert them into accessible formats.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <Card className="w-full bg-white border-none shadow-2xl rounded-[2rem] overflow-hidden group">
+      <div className="bg-primary/5 p-4 border-b border-primary/10 flex items-center justify-between px-8">
+         <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Secure Channel Ready</span>
+         </div>
+         <ShieldCheck className="w-4 h-4 text-primary/40" />
+      </div>
+      <CardContent className="p-10 space-y-8">
         <FileUpload 
           onFileSelect={setFile} 
           loading={uploading}
         />
-        <Button 
-          className="w-full" 
-          disabled={!file || uploading}
-          onClick={handleUpload}
-        >
-          {uploading ? 'Uploading...' : 'Start Conversion'}
-        </Button>
+        
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
+           <Button 
+             className="w-full h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 transition-all active:scale-95 group" 
+             disabled={!file || uploading}
+             onClick={handleUpload}
+           >
+             {uploading ? (
+               <span className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 animate-bounce fill-current" /> Initializing AI...
+               </span>
+             ) : (
+               <span className="flex items-center gap-2">
+                  Start AI Transformation <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+               </span>
+             )}
+           </Button>
+           {file && !uploading && (
+             <Button variant="ghost" className="h-14 px-8 rounded-2xl font-bold text-slate-400 hover:text-slate-600" onClick={() => setFile(null)}>
+                Cancel
+             </Button>
+           )}
+        </div>
+
+        <div className="flex items-center justify-center gap-8 pt-2">
+           <HelperIcon icon={<Zap className="w-4 h-4" />} label="Instant Processing" />
+           <div className="w-1 h-1 rounded-full bg-slate-200" />
+           <HelperIcon icon={<ShieldCheck className="w-4 h-4" />} label="Private & Encrypted" />
+        </div>
       </CardContent>
     </Card>
   )
+}
+
+function HelperIcon({ icon, label }: { icon: React.ReactNode, label: string }) {
+   return (
+      <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+         {icon} {label}
+      </div>
+   )
 }

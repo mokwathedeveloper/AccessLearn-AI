@@ -1,0 +1,9 @@
+{
+  "name": "access-learn-ai-root",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install --prefix frontend",
+    "build": "npm install --prefix frontend && npm run build --prefix frontend",
+    "dev": "npm run dev --prefix frontend"
+  }
+}
