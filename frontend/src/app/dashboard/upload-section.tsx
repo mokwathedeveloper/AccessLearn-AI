@@ -50,9 +50,10 @@ export function UploadSection() {
       setFile(null)
       router.refresh() // Refresh the page to show new materials in the list (once implemented)
       alert('File uploaded successfully! Processing will begin shortly.')
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload failed:', error)
-      alert(`Upload failed: ${error.message || 'Unknown error'}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      alert(`Upload failed: ${errorMessage}`)
     } finally {
       setUploading(false)
     }
