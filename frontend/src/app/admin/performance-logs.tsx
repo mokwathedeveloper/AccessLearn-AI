@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Loader2, Activity, Clock, Globe, ShieldCheck } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { Loader2, Activity, Clock } from 'lucide-react'
 
 interface PerformanceLog {
   id: string

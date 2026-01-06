@@ -1,13 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AudioPlayer } from '@/components/audio-player'
 import { 
   FileAudio, 
   Sparkles, 
-  BookOpen, 
-  Clock, 
   Download, 
   Share2, 
   Loader2, 

@@ -6,11 +6,10 @@ import {
   ShieldAlert, 
   Database, 
   Search,
-  ArrowUpRight,
-  RefreshCw,
   LayoutDashboard,
   Zap,
-  HardDrive
+  HardDrive,
+  ArrowUpRight
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -141,24 +140,6 @@ function AdminMiniCard({ icon, label, value, color }: { icon: React.ReactNode, l
             <p className={`text-3xl font-black tracking-tighter ${color}`}>{value}</p>
          </div>
       </Card>
-   )
-}
-
-function MasterActivityRow({ name, status, time }: { name: string, status: string, time: string }) {
-   return (
-      <div className="p-8 flex items-center justify-between group hover:bg-slate-50/50 transition-all">
-         <div className="flex items-center gap-6">
-            <div className={`w-2 h-2 rounded-full ${status === 'synced' ? 'bg-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.5)]' : 'bg-primary animate-pulse shadow-[0_0_10px_rgba(var(--primary),0.5)]'}`} />
-            <div>
-               <p className="text-base font-black text-slate-800 tracking-tight group-hover:text-primary transition-colors">{name}</p>
-               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-60">Hash Registry Match</p>
-            </div>
-         </div>
-         <div className="flex items-center gap-6">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">{time}</span>
-            <ArrowUpRight className="w-4 h-4 text-slate-200 group-hover:text-primary transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-         </div>
-      </div>
    )
 }
 

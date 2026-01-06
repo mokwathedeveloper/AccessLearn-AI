@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -24,54 +24,100 @@ type ContrastMode = 'standard' | 'high-contrast'
 type TextSize = 'default' | 'large'
 
 export function SettingsForm() {
-  const [contrastMode, setContrastMode] = useState<ContrastMode>('standard')
-  const [textSize, setTextSize] = useState<TextSize>('default')
-  const [voiceSpeed, setVoiceSpeed] = useState([1.0])
-  const [continuousListening, setContinuousListening] = useState(false)
+  // Initialize state from localStorage to avoid effect-based updates
+  const [contrastMode, setContrastMode] = useState<ContrastMode>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('accesslearn_contrast') as ContrastMode) || 'standard'
+    }
+    return 'standard'
+  })
+
+  const [textSize, setTextSize] = useState<TextSize>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('accesslearn_text_size') as TextSize) || 'default'
+    }
+    return 'default'
+  })
+
+  const [voiceSpeed, setVoiceSpeed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('accesslearn_voice_speed')
+      return saved ? [parseFloat(saved)] : [1.0]
+    }
+    return [1.0]
+  })
+
+  const [continuousListening, setContinuousListening] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('accesslearn_listening') === 'true'
+    }
+    return false
+  })
+
   const [activeTab, setActiveTab] = useState('appearance')
   const [isSaving, setIsSaving] = useState(false)
   const [hasSaved, setHasSaved] = useState(false)
 
   // Notification states
-  const [emailNotifications, setEmailNotifications] = useState(true)
-  const [studyReminders, setStudyReminders] = useState(true)
-  const [materialsAlerts, setMaterialsAlerts] = useState(true)
+  const [emailNotifications, setEmailNotifications] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('accesslearn_email_notif')
+      return saved !== null ? saved === 'true' : true
+    }
+    return true
+  })
+
+  const [studyReminders, setStudyReminders] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('accesslearn_reminders')
+      return saved !== null ? saved === 'true' : true
+    }
+    return true
+  })
+
+  const [materialsAlerts, setMaterialsAlerts] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('accesslearn_alerts')
+      return saved !== null ? saved === 'true' : true
+    }
+    return true
+  })
 
   // Privacy states
-  const [twoFactor, setTwoFactor] = useState(false)
-  const [dataEncryption, setDataEncryption] = useState(true)
+  const [twoFactor, setTwoFactor] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('accesslearn_2fa') === 'true'
+    }
+    return false
+  })
 
   // Language state
-  const [language, setLanguage] = useState('English (US)')
+  const [language, setLanguage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('accesslearn_lang') || 'English (US)'
+    }
+    return 'English (US)'
+  })
 
-  // Load settings on mount
+  const applySettings = useCallback(() => {
+    const root = document.documentElement
+    if (contrastMode === 'high-contrast') {
+      root.classList.add('high-contrast')
+    } else {
+      root.classList.remove('high-contrast')
+    }
+    
+    if (textSize === 'large') {
+      root.style.fontSize = '18px'
+    } else {
+      root.style.fontSize = '16px'
+    }
+  }, [contrastMode, textSize])
+
+  // Apply settings on mount if needed (for initial CSS classes)
   useEffect(() => {
-    const savedContrast = localStorage.getItem('accesslearn_contrast') as ContrastMode
-    const savedTextSize = localStorage.getItem('accesslearn_text_size') as TextSize
-    const savedVoiceSpeed = localStorage.getItem('accesslearn_voice_speed')
-    const savedListening = localStorage.getItem('accesslearn_listening')
-    
-    // Notifications
-    const savedEmail = localStorage.getItem('accesslearn_email_notif')
-    const savedReminders = localStorage.getItem('accesslearn_reminders')
-    const savedAlerts = localStorage.getItem('accesslearn_alerts')
-
-    // Privacy
-    const saved2fa = localStorage.getItem('accesslearn_2fa')
-    const savedLang = localStorage.getItem('accesslearn_lang')
-
-    if (savedContrast) setContrastMode(savedContrast)
-    if (savedTextSize) setTextSize(savedTextSize)
-    if (savedVoiceSpeed) setVoiceSpeed([parseFloat(savedVoiceSpeed)])
-    if (savedListening) setContinuousListening(savedListening === 'true')
-    
-    if (savedEmail !== null) setEmailNotifications(savedEmail === 'true')
-    if (savedReminders !== null) setStudyReminders(savedReminders === 'true')
-    if (savedAlerts !== null) setMaterialsAlerts(savedAlerts === 'true')
-    
-    if (saved2fa !== null) setTwoFactor(saved2fa === 'true')
-    if (savedLang) setLanguage(savedLang)
-  }, [])
+    applySettings()
+  }, [applySettings])
 
   const handleSave = () => {
     setIsSaving(true)
@@ -95,21 +141,6 @@ export function SettingsForm() {
       setHasSaved(true)
       setTimeout(() => setHasSaved(false), 2000)
     }, 800)
-  }
-
-  const applySettings = () => {
-    const root = document.documentElement
-    if (contrastMode === 'high-contrast') {
-      root.classList.add('high-contrast')
-    } else {
-      root.classList.remove('high-contrast')
-    }
-    
-    if (textSize === 'large') {
-      root.style.fontSize = '18px'
-    } else {
-      root.style.fontSize = '16px'
-    }
   }
 
   return (
@@ -399,6 +430,7 @@ function ToggleItem({ icon, title, description, active, onToggle }: { icon?: Rea
             </div>
          </div>
          <button 
+           type="button"
            onClick={onToggle}
            className={`w-12 h-6 rounded-full transition-all relative p-1 shrink-0 ${active ? 'bg-primary' : 'bg-slate-300'}`}
          >

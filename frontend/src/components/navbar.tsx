@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { UserNav } from './user-nav'
-import { Sparkles, LayoutDashboard, ShieldCheck } from 'lucide-react'
+import { Sparkles, LayoutDashboard } from 'lucide-react'
 import { getUserRole } from '@/lib/auth/server'
 import {
   Tooltip,

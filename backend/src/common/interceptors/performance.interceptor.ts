@@ -9,11 +9,18 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
+import { Request, Response } from 'express';
+
+interface RequestWithUser extends Request {
+  user?: {
+    id: string;
+  };
+}
 
 @Injectable()
 export class PerformanceInterceptor implements NestInterceptor {
   private readonly logger = new Logger('Performance');
-  private supabase: SupabaseClient;
+  private supabase: SupabaseClient | null = null;
 
   constructor(private readonly configService: ConfigService) {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
@@ -26,27 +33,27 @@ export class PerformanceInterceptor implements NestInterceptor {
     }
   }
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const now = Date.now();
-    const request = context.switchToHttp().getRequest();
+    const httpContext = context.switchToHttp();
+    const request = httpContext.getRequest<RequestWithUser>();
     const { method, url, ip } = request;
     const userAgent = request.get('user-agent') || '';
 
     return next.handle().pipe(
-      tap(async () => {
+      tap(() => {
         const duration = Date.now() - now;
-        const response = context.switchToHttp().getResponse();
+        const response = httpContext.getResponse<Response>();
         const statusCode = response.statusCode;
 
         this.logger.log(`[${method}] ${url} - ${statusCode} - ${duration}ms`);
 
         if (this.supabase) {
-          try {
-            // Attempt to get user id if available (from auth header)
-            // Note: This assumes some auth middleware has already run and attached user to request
-            const user = request.user;
-            
-            await this.supabase.from('performance_logs').insert({
+          const user = request.user;
+
+          this.supabase
+            .from('performance_logs')
+            .insert({
               method,
               route: url,
               status_code: statusCode,
@@ -54,10 +61,15 @@ export class PerformanceInterceptor implements NestInterceptor {
               user_id: user?.id || null,
               ip_address: ip,
               user_agent: userAgent,
+            })
+            .then(({ error }) => {
+              if (error) {
+                this.logger.error(
+                  'Failed to save performance log to Supabase',
+                  error,
+                );
+              }
             });
-          } catch (error) {
-            this.logger.error('Failed to save performance log to Supabase', error);
-          }
         }
       }),
     );

@@ -8,7 +8,6 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Loader2,
-  Calendar,
   ChevronRight
 } from 'lucide-react'
 import Link from 'next/link'

@@ -3,13 +3,8 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip"
 import { SettingsForm } from './settings-form'
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 export default async function SettingsPage() {
   const supabase = await createClient()
