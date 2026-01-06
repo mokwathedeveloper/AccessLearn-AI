@@ -47,7 +47,7 @@ export function UploadSection() {
 
       if (dbError) throw dbError
 
-      // 4. Trigger AI Processing via Backend
+      // 4. Trigger AI Processing via Next.js API Route
       const materialData = await supabase
         .from('materials')
         .select('id')
@@ -55,8 +55,7 @@ export function UploadSection() {
         .single()
       
       if (materialData.data) {
-        // Replace with your actual backend URL in production
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/materials/process`, {
+        fetch('/api/materials/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ materialId: materialData.data.id }),
