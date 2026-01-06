@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { 
   FileText, 
   Headphones, 
@@ -20,122 +21,126 @@ import {
 export default function Home() {
   return (
     <TooltipProvider>
-      <div className="flex flex-col min-h-screen bg-white overflow-x-hidden">
-        {/* Master OG Hero Section */}
-        <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-48">
+      <div className="flex flex-col min-h-screen bg-white">
+        {/* Master Tier Hero */}
+        <section className="relative pt-24 pb-32 lg:pt-40 lg:pb-56 overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-30">
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-teal-400/10 rounded-full blur-[150px]" />
+          </div>
+          
           <div className="wide-container">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-8 text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 text-[10px] font-black tracking-widest uppercase text-primary border border-primary/10">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Version 2.0 Master Release</span>
-                </div>
-                
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight">
-                  Academic Content <br/>
-                  <span className="text-primary italic font-serif">Redefined.</span>
-                </h1>
-                
-                <p className="max-w-xl text-lg text-slate-500 font-medium leading-relaxed">
-                  The world&apos;s first unified accessibility engine. Convert documents into audio, summaries, and simplified text with neural precision.
-                </p>
-                
-                <div className="flex items-center gap-4 pt-4">
-                  <Button size="lg" className="rounded-xl h-14 px-8 font-bold shadow-xl shadow-primary/20" asChild>
-                    <Link href="/auth/sign-up">Start Learning Free</Link>
-                  </Button>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-14 w-14 rounded-xl border-slate-200" asChild>
-                        <Link href="/auth/sign-in">
-                          <Play className="w-5 h-5 text-primary ml-0.5 fill-current" />
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">Login to Dashboard</TooltipContent>
-                  </Tooltip>
-                </div>
+            <div className="flex flex-col items-center text-center space-y-12">
+              <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-slate-50 border border-slate-100 text-[11px] font-black tracking-[0.25em] uppercase text-primary animate-in fade-in slide-in-from-top-4 duration-1000 shadow-sm">
+                <Sparkles className="w-4 h-4" />
+                <span>Next-Gen Access Protocol</span>
               </div>
+              
+              <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tight text-slate-900 leading-[0.85] text-center max-w-5xl">
+                Intelligence <br/> <span className="text-primary italic font-serif">Simplified.</span>
+              </h1>
+              
+              <p className="mx-auto max-w-3xl text-lg text-slate-500/80 md:text-2xl font-medium leading-relaxed animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                Break the barriers of static learning. Transform your lecture materials into neural-synced audio and adaptive insights instantly.
+              </p>
+              
+              <div className="flex items-center justify-center gap-6 pt-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button size="icon" className="h-20 w-20 rounded-[2.25rem] shadow-2xl shadow-primary/30 hover:scale-110 active:scale-95 transition-all duration-500 group p-0" asChild>
+                      <Link href="/auth/sign-up">
+                        <Zap className="w-9 h-9 fill-current" />
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="font-bold uppercase text-[10px] tracking-widest px-4 py-2">Initialize Account</TooltipContent>
+                </Tooltip>
 
-              <div className="relative hidden lg:block">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/5 rounded-full blur-[100px] -z-10" />
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-6 pt-12">
-                    <FeatureBox icon={<Brain className="w-6 h-6" />} title="Simplification" />
-                    <FeatureBox icon={<FileText className="w-6 h-6" />} title="Analysis" />
-                  </div>
-                  <div className="space-y-6">
-                    <FeatureBox icon={<Headphones className="w-6 h-6" />} title="Neural TTS" />
-                    <FeatureBox icon={<Mic className="w-6 h-6" />} title="Voice Flow" />
-                  </div>
-                </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" className="h-20 w-20 rounded-[2.25rem] border-2 border-slate-200 bg-white/50 backdrop-blur-md hover:bg-white hover:border-primary/20 transition-all duration-500 p-0 shadow-xl" asChild>
+                      <Link href="/auth/sign-in">
+                        <Play className="w-9 h-9 text-primary ml-1 fill-current" />
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="font-bold uppercase text-[10px] tracking-widest px-4 py-2">Sync Dashboard</TooltipContent>
+                </Tooltip>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Dense Features Grid */}
-        <section className="bg-slate-50 py-24 lg:py-32">
+        {/* Master Tier Features Grid */}
+        <section className="bg-slate-50/50 py-32 lg:py-48 border-y border-slate-100/50">
           <div className="wide-container">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <PremiumFeature 
-                icon={<Sparkles className="w-5 h-5" />}
-                title="Deep Intelligence"
-                desc="Summarize materials using DeepSeek V3 neural weights."
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 items-stretch">
+              <PremiumFeatureCard 
+                icon={<FileText className="w-10 h-10" />}
+                title="Intelligence"
+                desc="Automatic summarization of complex academic materials."
               />
-              <PremiumFeature 
-                icon={<Zap className="w-5 h-5" />}
-                title="Instant Flow"
-                desc="Real-time document processing and synchronization."
+              <PremiumFeatureCard 
+                icon={<Brain className="w-10 h-10" />}
+                title="Cognition"
+                desc="Simplified text formats for better mental processing."
               />
-              <PremiumFeature 
-                icon={<Headphones className="w-5 h-5" />}
-                title="High Fidelity"
-                desc="Crystal clear AI voice generation for better focus."
+              <PremiumFeatureCard 
+                icon={<Headphones className="w-10 h-10" />}
+                title="Auditory"
+                desc="Neural text-to-speech engine for mobile learning."
               />
-              <PremiumFeature 
-                icon={<ArrowUpRight className="w-5 h-5" />}
-                title="Growth Ready"
-                desc="Built on Supabase for enterprise-grade scalability."
+              <PremiumFeatureCard 
+                icon={<Mic className="w-10 h-10" />}
+                title="Control"
+                desc="Full-platform navigation using neural voice commands."
               />
             </div>
           </div>
         </section>
 
         {/* Master CTA */}
-        <section className="py-24 lg:py-40 bg-slate-900 text-white">
-          <div className="wide-container flex flex-col md:flex-row items-center justify-between gap-12">
-            <div className="space-y-4">
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight">Ready to Master Your <br/> Education?</h2>
-              <p className="text-slate-400 text-lg font-medium">Join 5,000+ students today.</p>
-            </div>
-            <Button size="lg" className="h-16 px-12 rounded-2xl bg-white text-slate-950 hover:bg-primary hover:text-white transition-all text-lg font-black uppercase tracking-widest" asChild>
-              <Link href="/auth/sign-up text-slate-900">Create Account</Link>
-            </Button>
-          </div>
+        <section className="bg-slate-950 py-40 relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-[50%] h-full bg-primary/10 blur-[150px]" />
+           <div className="wide-container flex flex-col items-center space-y-16 relative z-10">
+              <div className="text-center space-y-6">
+                 <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none">
+                    Lead the <span className="text-primary italic">Standard.</span>
+                 </h2>
+                 <p className="text-slate-400 text-xl font-medium max-w-xl mx-auto">Master your education with the elite accessibility engine.</p>
+              </div>
+              <Tooltip>
+                 <TooltipTrigger asChild>
+                    <Button className="h-28 w-28 rounded-[3rem] bg-white text-slate-950 hover:bg-primary hover:text-white transition-all duration-700 shadow-2xl hover:scale-110" asChild>
+                       <Link href="/auth/sign-up">
+                          <ArrowUpRight className="w-12 h-12 transition-transform group-hover:translate-x-2 group-hover:-translate-y-2" />
+                       </Link>
+                    </Button>
+                 </TooltipTrigger>
+                 <TooltipContent side="top" className="font-bold uppercase tracking-widest text-[10px]">Create Account</TooltipContent>
+              </Tooltip>
+           </div>
         </section>
       </div>
     </TooltipProvider>
   )
 }
 
-function FeatureBox({ icon, title }: { icon: React.ReactNode, title: string }) {
+function PremiumFeatureCard({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
   return (
-    <div className="p-8 rounded-[2rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col gap-4 items-start group hover:border-primary/20 transition-all">
-      <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary">{icon}</div>
-      <span className="text-sm font-black uppercase tracking-widest text-slate-400">{title}</span>
-    </div>
-  )
-}
-
-function PremiumFeature({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
-  return (
-    <div className="p-8 rounded-2xl bg-white border border-slate-200/60 flex flex-col gap-4 hover:shadow-lg transition-all">
-      <div className="text-primary">{icon}</div>
-      <div className="space-y-1">
-        <h3 className="font-black text-sm uppercase tracking-tight text-slate-900">{title}</h3>
-        <p className="text-slate-500 text-xs font-medium leading-relaxed">{desc}</p>
+    <Card className="master-card p-10 space-y-8 rounded-[2.5rem] bg-white group cursor-default h-full flex flex-col justify-between">
+      <div className="space-y-8">
+        <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-all duration-500 group-hover:scale-110 shadow-inner">
+          {icon}
+        </div>
+        <div className="space-y-3">
+          <h3 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-400 group-hover:text-primary transition-colors">{title}</h3>
+          <p className="text-slate-500 font-medium text-base leading-relaxed">{desc}</p>
+        </div>
       </div>
-    </div>
+      <div className="pt-6 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-x-2 group-hover:translate-x-0">
+         <ArrowUpRight className="w-5 h-5 text-primary" />
+      </div>
+    </Card>
   )
 }
