@@ -8,6 +8,7 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Loader2,
+  Calendar,
   ChevronRight
 } from 'lucide-react'
 import Link from 'next/link'
@@ -48,7 +49,7 @@ export async function MaterialsList() {
     <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3 items-stretch">
       {materials.map((material) => (
         <Link key={material.id} href={`/dashboard/material/${material.id}`} className="group block h-full">
-          <Card className="senior-card rounded-xl h-full">
+          <Card className="senior-card rounded-xl h-full border-slate-200/60 shadow-sm bg-white overflow-hidden relative transition-all hover:border-primary/30 hover:shadow-md">
             <CardContent className="p-5 flex flex-col h-full space-y-5">
               <div className="flex justify-between items-start gap-3">
                 <div className="flex items-center gap-3 overflow-hidden">
@@ -56,10 +57,10 @@ export async function MaterialsList() {
                       <FileText className="w-4.5 h-4.5" />
                    </div>
                    <div className="space-y-0.5 overflow-hidden">
-                      <h3 className="font-bold text-slate-900 text-xs truncate leading-tight tracking-tight" title={material.title}>
+                      <h3 className="font-bold text-slate-900 text-xs truncate leading-tight tracking-tight uppercase" title={material.title}>
                         {material.title}
                       </h3>
-                      <p className="text-[9px] font-medium text-slate-400 uppercase tracking-widest">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-60">
                          {new Date(material.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                       </p>
                    </div>
@@ -69,14 +70,14 @@ export async function MaterialsList() {
 
               <div className="flex flex-wrap gap-1.5 mt-auto">
                 <Indicator active={!!material.audio_url} icon={<Headphones className="w-3 h-3" />} label="Audio" />
-                <Indicator active={!!material.summary} icon={<Sparkles className="w-3 h-3" />} label="AI" />
+                <Indicator active={!!material.summary} icon={<Sparkles className="w-3 h-3" />} label="Neural" />
               </div>
 
               <div className="flex items-center justify-between pt-3 border-t border-slate-50">
                  <span className="text-[9px] font-black text-primary uppercase tracking-widest flex items-center group-hover:gap-1 transition-all">
                     Open <ChevronRight className="w-3 h-3" />
                  </span>
-                 <span className="text-[8px] font-mono text-slate-300 opacity-60">#{material.id.substring(0,6)}</span>
+                 <span className="text-[8px] font-mono text-slate-300 opacity-60 tracking-tighter">ID:{material.id.substring(0,6).toUpperCase()}</span>
               </div>
             </CardContent>
           </Card>
@@ -98,25 +99,25 @@ function StatusIcon({ status }: { status: string }) {
   switch (status) {
     case 'completed':
       return (
-        <div className="text-teal-500 bg-teal-50 p-1.5 rounded-md border border-teal-100/50">
+        <div className="text-teal-500 bg-teal-50 p-1.5 rounded-md border border-teal-100/50 shadow-sm">
           <CheckCircle2 className="w-3 h-3" />
         </div>
       )
     case 'processing':
       return (
-        <div className="text-primary bg-primary/5 p-1.5 rounded-md border border-primary/10 animate-pulse">
+        <div className="text-primary bg-primary/5 p-1.5 rounded-md border border-primary/10 animate-pulse shadow-sm">
           <Loader2 className="w-3 h-3 animate-spin" />
         </div>
       )
     case 'failed':
       return (
-        <div className="text-red-500 bg-red-50 p-1.5 rounded-md border border-red-100">
+        <div className="text-red-500 bg-red-50 p-1.5 rounded-md border border-red-100 shadow-sm">
           <AlertCircle className="w-3 h-3" />
         </div>
       )
     default:
       return (
-        <div className="text-slate-400 bg-slate-50 p-1.5 rounded-md border border-slate-100">
+        <div className="text-slate-400 bg-slate-50 p-1.5 rounded-md border border-slate-100 shadow-sm">
           <Clock className="w-3 h-3" />
         </div>
       )

@@ -18,7 +18,7 @@ export default async function DashboardPage() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-slate-50/20 pb-16">
-        <div className="app-container py-8 lg:py-12 space-y-8">
+        <div className="wide-grid py-8 lg:py-12 space-y-8">
           {/* Senior Command Center: Mission Header */}
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 pb-6 border-b border-slate-200">
             <div className="space-y-0.5">

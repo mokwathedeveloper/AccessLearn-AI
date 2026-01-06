@@ -13,9 +13,7 @@ import {
   Loader2, 
   Printer, 
   RefreshCw, 
-  LayoutGrid,
-  Settings2,
-  Maximize2
+  LayoutGrid
 } from 'lucide-react'
 import Link from 'next/link'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -55,89 +53,98 @@ export default async function MaterialDetailPage({ params }: PageProps) {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-slate-50/30 pb-32">
-        {/* Focused Reader Toolbar */}
-        <div className="border-b bg-white/80 sticky top-14 z-40 backdrop-blur-md">
-           <div className="app-container h-12 flex items-center justify-between">
-              <div className="flex items-center gap-4">
+        {/* Master Controlled Header */}
+        <div className="border-b bg-white/80 sticky top-14 z-40 backdrop-blur-xl">
+           <div className="wide-grid h-14 flex items-center justify-between">
+              <div className="flex items-center gap-6">
                  <Tooltip>
                     <TooltipTrigger asChild>
-                       <Button variant="ghost" size="icon" asChild className="h-8 w-8 rounded-md">
+                       <Button variant="ghost" size="icon" asChild className="h-9 w-9 rounded-lg hover:bg-slate-50 border border-slate-200 shadow-sm">
                          <Link href="/dashboard">
-                           <LayoutGrid className="w-4 h-4 text-slate-500 hover:text-primary transition-colors" />
+                           <LayoutGrid className="w-4 h-4 text-primary" />
                          </Link>
                        </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom" className="text-[10px] font-bold">Library</TooltipContent>
+                    <TooltipContent side="bottom" className="text-[10px] font-bold">Exit to Library</TooltipContent>
                  </Tooltip>
-                 <div className="h-4 w-[1px] bg-slate-200" />
-                 <h2 className="text-xs font-bold text-slate-900 truncate max-w-xs">{material.title}</h2>
+                 
+                 <div className="hidden md:block">
+                    <h2 className="text-xs font-black text-slate-900 truncate max-w-sm uppercase tracking-tight">{material.title}</h2>
+                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5">
-                 <ActionBtn icon={<Share2 className="w-3.5 h-3.5" />} label="Share" />
-                 <ActionBtn icon={<Download className="w-3.5 h-3.5" />} label="Export" />
-                 <ActionBtn icon={<Printer className="w-3.5 h-3.5" />} label="Print" />
-                 <div className="h-4 w-[1px] bg-slate-200 mx-1" />
-                 <ActionBtn icon={<Settings2 className="w-3.5 h-3.5" />} label="View Options" />
+              <div className="flex items-center gap-2">
+                 <ReaderAction icon={<Share2 className="w-3.5 h-3.5" />} label="Share Link" />
+                 <ReaderAction icon={<Download className="w-3.5 h-3.5" />} label="Export Data" />
+                 <ReaderAction icon={<Printer className="w-3.5 h-3.5" />} label="Print View" />
+                 <div className="hidden sm:flex ml-4 px-3 py-1 rounded-md bg-slate-950 text-white text-[9px] font-black uppercase tracking-widest">
+                    {material.status}
+                 </div>
               </div>
            </div>
         </div>
 
-        <div className="app-container py-8 max-w-6xl">
-          <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
-            <div className="space-y-8 min-w-0">
-              {/* Reader Module */}
+        <div className="wide-grid py-12">
+          <div className="grid gap-12 lg:grid-cols-[1fr_320px]">
+            <div className="space-y-12">
+              {/* High-End Player Module */}
               <section className="space-y-4">
+                <div className="flex items-center justify-between px-1">
+                   <div className="flex items-center gap-2">
+                      <FileAudio className="w-4 h-4 text-primary" />
+                      <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Neural Playback</h2>
+                   </div>
+                   <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+                </div>
                 {audioUrl ? (
-                  <div className="bg-slate-950 rounded-xl p-6 lg:p-8 shadow-xl">
+                  <Card className="border-none shadow-2xl bg-slate-950 text-white rounded-2xl overflow-hidden p-10 lg:p-14">
                      <AudioPlayer src={audioUrl} />
-                  </div>
+                  </Card>
                 ) : (
-                   <div className="p-12 bg-white rounded-xl border border-slate-200 flex flex-col items-center justify-center text-center space-y-3">
-                      <Loader2 className="w-5 h-5 text-primary/30 animate-spin" />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Processing Audio...</p>
+                   <div className="p-16 bg-white rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+                      <Loader2 className="w-10 h-10 text-primary/30 animate-spin" />
+                      <p className="font-bold text-slate-900 text-sm uppercase tracking-widest opacity-60">Synthesizing stream...</p>
                    </div>
                 )}
               </section>
 
+              {/* Master Content Tabs */}
               <Tabs defaultValue="simplified" className="w-full">
-                <TabsList className="bg-slate-100/50 p-1 rounded-lg h-9 w-fit gap-1 mb-6 border border-slate-200/50">
-                  <TabsTrigger value="simplified" className="rounded-md px-6 h-full font-bold uppercase text-[9px] tracking-wider data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary">
-                    Simplified
+                <TabsList className="bg-slate-100/50 p-1 rounded-xl h-11 w-full md:w-fit justify-start gap-1 mb-10 shadow-inner">
+                  <TabsTrigger value="simplified" className="rounded-lg px-8 h-full font-bold uppercase text-[9px] tracking-[0.15em] data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all">
+                    Adaptive Text
                   </TabsTrigger>
-                  <TabsTrigger value="summary" className="rounded-md px-6 h-full font-bold uppercase text-[9px] tracking-wider data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary">
-                    Insights
+                  <TabsTrigger value="summary" className="rounded-lg px-8 h-full font-bold uppercase text-[9px] tracking-[0.15em] data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all">
+                    Key Insights
                   </TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="simplified">
-                  <Card className="senior-card border-none shadow-sm rounded-xl p-8 lg:p-12 min-h-[500px]">
-                    <div className="prose prose-slate max-w-none">
+                <TabsContent value="simplified" className="focus-visible:ring-0">
+                  <Card className="bg-white border border-slate-200/60 shadow-2xl rounded-2xl p-10 lg:p-16 min-h-[500px]">
+                    <div className="prose prose-slate max-w-none prose-p:text-slate-700 prose-p:text-lg prose-p:leading-[1.8] prose-p:font-medium">
                       {material.simplified_content ? (
-                        <p className="text-slate-700 text-base leading-relaxed whitespace-pre-wrap font-medium">
-                          {material.simplified_content}
-                        </p>
+                        <p className="whitespace-pre-wrap">{material.simplified_content}</p>
                       ) : (
-                        <div className="flex flex-col items-center justify-center py-20 opacity-20">
-                           <Sparkles className="w-8 h-8 mb-2" />
-                           <p className="text-[10px] font-black uppercase tracking-widest">Neural mapping active</p>
+                        <div className="flex flex-col items-center justify-center py-32 space-y-4 opacity-20">
+                           <Sparkles className="w-12 h-12" />
+                           <p className="text-[9px] font-black uppercase tracking-[0.3em]">AI mapping active... rendering</p>
                         </div>
                       )}
                     </div>
                   </Card>
                 </TabsContent>
                 
-                <TabsContent value="summary">
-                  <Card className="senior-card border-none shadow-sm rounded-xl p-8 lg:p-12 min-h-[500px]">
-                    <div className="prose prose-slate max-w-none">
+                <TabsContent value="summary" className="focus-visible:ring-0">
+                  <Card className="bg-white border border-slate-200/60 shadow-2xl rounded-2xl p-10 lg:p-16 min-h-[500px]">
+                    <div className="prose prose-slate max-w-none prose-p:text-slate-700 prose-p:text-lg prose-p:leading-[1.8] prose-p:font-medium">
                       {material.summary ? (
-                        <div className="border-l-2 border-primary/20 pl-8 italic">
-                           <p className="text-slate-700 text-base leading-relaxed whitespace-pre-wrap font-medium">{material.summary}</p>
+                        <div className="border-l-4 border-primary/20 pl-10 italic">
+                           <p className="whitespace-pre-wrap">{material.summary}</p>
                         </div>
                       ) : (
-                        <div className="flex flex-col items-center justify-center py-20 opacity-20">
-                           <Sparkles className="w-8 h-8 mb-2" />
-                           <p className="text-[10px] font-black uppercase tracking-widest">Logic extraction active</p>
+                        <div className="flex flex-col items-center justify-center py-32 space-y-4 opacity-20">
+                           <Sparkles className="w-12 h-12" />
+                           <p className="text-[9px] font-black uppercase tracking-[0.3em]">Neural summary initializing</p>
                         </div>
                       )}
                     </div>
@@ -146,37 +153,38 @@ export default async function MaterialDetailPage({ params }: PageProps) {
               </Tabs>
             </div>
 
-            <aside className="space-y-6">
-               <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6 shadow-sm">
-                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Settings</h3>
-                  <div className="space-y-4">
-                     <div className="flex justify-between items-center pb-4 border-b border-slate-50">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">Scale</span>
-                        <div className="flex gap-1.5">
-                           <Button size="icon" variant="secondary" className="h-7 w-7 rounded-md font-bold text-[10px]">A-</Button>
-                           <Button size="icon" variant="secondary" className="h-7 w-7 rounded-md font-bold text-[10px]">A+</Button>
+            {/* Smart Sidebar */}
+            <aside className="space-y-8">
+               <div className="bg-primary rounded-2xl p-10 text-white space-y-10 shadow-2xl shadow-primary/30 relative overflow-hidden group">
+                  <div className="absolute -bottom-10 -right-10 w-48 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-all duration-1000" />
+                  <div className="space-y-1 relative z-10">
+                     <h3 className="font-extrabold text-2xl tracking-tighter uppercase leading-none">Focus.</h3>
+                     <p className="text-white/60 text-xs font-bold uppercase tracking-widest">Personalize Flow</p>
+                  </div>
+                  <div className="space-y-6 relative z-10">
+                     <div className="flex justify-between items-center pb-5 border-b border-white/10">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Scale</span>
+                        <div className="flex gap-2">
+                           <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 rounded-lg font-black text-xs">A-</Button>
+                           <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 rounded-lg font-black text-xs">A+</Button>
                         </div>
                      </div>
-                     <Button variant="default" className="w-full h-10 rounded-lg text-xs font-bold uppercase tracking-widest bg-slate-900 hover:bg-slate-800">
-                        Save Preferences
-                     </Button>
+                     <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Sync</span>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 rounded-lg">
+                           <RefreshCw className="w-3.5 h-3.5" />
+                        </Button>
+                     </div>
                   </div>
+                  <Button variant="secondary" className="w-full h-12 rounded-xl font-black uppercase tracking-[0.2em] text-[9px] bg-white text-primary hover:bg-slate-50 transition-all shadow-xl">
+                     Update Reader
+                  </Button>
                </div>
 
-               <div className="rounded-xl border border-slate-200 p-6 space-y-4 bg-white/50">
-                  <div className="space-y-3">
-                     <div className="space-y-1">
-                        <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Intelligence</p>
-                        <p className="text-xs font-bold text-slate-900 flex items-center gap-2">
-                           <div className="w-1.5 h-1.5 rounded-full bg-teal-500" /> DeepSeek V3
-                        </p>
-                     </div>
-                     <div className="space-y-1">
-                        <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Asset Sync</p>
-                        <p className="text-xs font-bold text-slate-900 flex items-center gap-2">
-                           <Clock className="w-3.5 h-3.5 text-slate-400" /> {new Date(material.created_at).toLocaleDateString()}
-                        </p>
-                     </div>
+               <div className="bg-white rounded-2xl border border-slate-200/60 p-10 shadow-sm space-y-8">
+                  <div className="space-y-4">
+                     <ReaderMeta label="Source Engine" value="DeepSeek V3 Neural" />
+                     <ReaderMeta label="Timestamp" value={new Date(material.created_at).toLocaleDateString()} />
                   </div>
                </div>
             </aside>
@@ -187,15 +195,24 @@ export default async function MaterialDetailPage({ params }: PageProps) {
   )
 }
 
-function ActionBtn({ icon, label }: { icon: React.ReactNode, label: string }) {
+function ReaderMeta({ label, value }: { label: string, value: string }) {
+   return (
+      <div className="space-y-1">
+         <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">{label}</h3>
+         <span className="text-xs font-black text-slate-900 tracking-tight">{value}</span>
+      </div>
+   )
+}
+
+function ReaderAction({ icon, label }: { icon: React.ReactNode, label: string }) {
    return (
       <Tooltip>
          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-md text-slate-500 hover:text-primary transition-colors">
+            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg hover:bg-white border-transparent hover:border-slate-200 border transition-all text-slate-500">
                {icon}
             </Button>
          </TooltipTrigger>
-         <TooltipContent side="bottom" className="text-[10px] font-bold">{label}</TooltipContent>
+         <TooltipContent side="bottom" className="text-[10px] font-black tracking-tight">{label}</TooltipContent>
       </Tooltip>
    )
 }

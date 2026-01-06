@@ -19,14 +19,14 @@ export async function Navbar() {
   return (
     <TooltipProvider>
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
-        <div className="app-container flex h-14 items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-7 h-7 bg-primary rounded flex items-center justify-center shadow-md">
-                <Sparkles className="w-4 h-4 text-white" />
+        <div className="app-container flex h-14 items-center justify-between px-6 lg:px-12">
+          <div className="flex items-center gap-10">
+            <Link href="/" className="flex items-center space-x-2.5 group">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center transition-all group-hover:rotate-3 shadow-lg shadow-primary/20">
+                <Sparkles className="w-4.5 h-4.5 text-white" />
               </div>
-              <span className="font-bold text-base tracking-tight">
-                AccessLearn <span className="text-slate-400">AI</span>
+              <span className="font-bold text-lg tracking-tighter text-slate-900 sm:inline-block">
+                AccessLearn <span className="text-primary font-black uppercase tracking-tighter">AI</span>
               </span>
             </Link>
             
@@ -34,9 +34,9 @@ export async function Navbar() {
               {user && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-md" asChild>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg" asChild>
                       <Link href="/dashboard">
-                        <LayoutDashboard className="w-4 h-4 text-slate-500 hover:text-primary transition-colors" />
+                        <LayoutDashboard className="w-4.5 h-4.5 text-slate-500 hover:text-primary transition-colors" />
                       </Link>
                     </Button>
                   </TooltipTrigger>
@@ -46,28 +46,28 @@ export async function Navbar() {
               {role === 'admin' && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-md" asChild>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg" asChild>
                       <Link href="/admin">
-                        <ShieldCheck className="w-4 h-4 text-slate-500 hover:text-primary transition-colors" />
+                        <ShieldCheck className="w-4.5 h-4.5 text-slate-500 hover:text-primary transition-colors" />
                       </Link>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-[10px] font-bold">Admin</TooltipContent>
+                  <TooltipContent side="bottom" className="text-[10px] font-bold">Admin Hub</TooltipContent>
                 </Tooltip>
               )}
             </nav>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {user ? (
               <UserNav email={user.email!} role={role || 'student'} />
             ) : (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="h-8 text-xs font-semibold" asChild>
-                  <Link href="/auth/sign-in">Sign In</Link>
+                <Button variant="ghost" size="sm" className="font-bold text-[10px] uppercase tracking-widest px-4 h-9" asChild>
+                  <Link href="/auth/sign-in">Login</Link>
                 </Button>
-                <Button size="sm" className="h-8 text-xs font-bold rounded-md px-4" asChild>
-                  <Link href="/auth/sign-up">Get Started</Link>
+                <Button size="sm" className="rounded-lg px-5 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/10 h-9" asChild>
+                  <Link href="/auth/sign-up">Start Free</Link>
                 </Button>
               </div>
             )}

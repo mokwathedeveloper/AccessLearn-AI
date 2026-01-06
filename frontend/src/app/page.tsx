@@ -27,7 +27,7 @@ export default function Home() {
       <div className="flex flex-col min-h-screen bg-white">
         {/* Master Hero: High-Impact & Tight Spacing */}
         <section className="relative pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-slate-50">
-          <div className="app-container">
+          <div className="wide-grid">
             <div className="grid lg:grid-cols-[1fr_380px] gap-12 items-center">
               <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-primary/5 text-[9px] font-black uppercase tracking-[0.2em] text-primary border border-primary/10">
@@ -50,7 +50,7 @@ export default function Home() {
                   
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-11 w-11 rounded-lg border-slate-200" asChild>
+                      <Button variant="outline" size="icon" className="h-11 w-11 rounded-lg border-slate-200 bg-white hover:bg-slate-50 transition-all" asChild>
                         <Link href="/auth/sign-in">
                           <Play className="w-4 h-4 text-primary ml-0.5 fill-current" />
                         </Link>
@@ -79,7 +79,7 @@ export default function Home() {
 
         {/* Master Feature Grid: Balanced & Functional */}
         <section className="bg-slate-50/50 py-16 lg:py-24 border-b border-slate-100">
-          <div className="app-container">
+          <div className="wide-grid">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               <SchematicCard 
                 icon={<Brain className="w-5 h-5" />}
@@ -111,7 +111,7 @@ export default function Home() {
 
         {/* Mission-Driven Section */}
         <section className="py-16 lg:py-24 bg-white">
-           <div className="app-container">
+           <div className="wide-grid">
               <div className="flex flex-col lg:flex-row gap-12 lg:items-center">
                  <div className="flex-1 space-y-6">
                     <h2 className="text-3xl font-black tracking-tighter text-slate-900 leading-none">Built for <span className="text-primary italic">Independence.</span></h2>
@@ -132,7 +132,7 @@ export default function Home() {
                     <div className="space-y-4 relative z-10">
                        <div className="h-[1px] bg-white/10 w-full" />
                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Status</span>
+                          <span className="text-10px] font-bold uppercase tracking-widest opacity-60">Status</span>
                           <span className="text-[10px] font-bold text-teal-400 uppercase tracking-widest">Master Verified</span>
                        </div>
                     </div>
@@ -143,7 +143,7 @@ export default function Home() {
 
         {/* Catchy CTA */}
         <section className="bg-slate-950 py-20 relative overflow-hidden">
-           <div className="app-container flex flex-col items-center text-center space-y-8 relative z-10">
+           <div className="wide-grid flex flex-col items-center text-center space-y-8 relative z-10">
               <div className="space-y-2">
                  <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-none">
                     Transform Your <span className="text-primary italic">Learning Flow.</span>
@@ -163,7 +163,7 @@ export default function Home() {
 function SchematicCard({ icon, title, label, desc }: { icon: React.ReactNode, title: string, label: string, desc: string }) {
   return (
     <div className="p-8 rounded-2xl bg-white border border-slate-200/60 flex flex-col gap-6 hover:border-primary/30 hover:shadow-lg transition-all duration-500 group relative">
-      <div className="w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all">
+      <div className="w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-all">
         {icon}
       </div>
       <div className="space-y-3">

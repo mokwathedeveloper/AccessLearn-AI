@@ -28,7 +28,7 @@ export default async function AdminPage() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-slate-50/30 pb-20">
-        <div className="wide-container py-8 md:py-12 space-y-12">
+        <div className="wide-grid py-10 lg:py-16 space-y-12">
           {/* Master Admin Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-8 border-b border-slate-200">
             <div className="space-y-1">
