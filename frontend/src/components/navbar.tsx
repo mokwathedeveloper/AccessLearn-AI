@@ -66,9 +66,6 @@ export async function Navbar() {
                 <Button variant="ghost" size="sm" className="font-bold text-[10px] uppercase tracking-widest px-4 h-9" asChild>
                   <Link href="/auth/sign-in">Login</Link>
                 </Button>
-                <Button size="sm" className="rounded-lg px-5 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/10 h-9" asChild>
-                  <Link href="/auth/sign-up">Start Free</Link>
-                </Button>
               </div>
             )}
           </div>

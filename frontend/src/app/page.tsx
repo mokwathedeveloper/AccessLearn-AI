@@ -44,10 +44,6 @@ export default function Home() {
                 </p>
                 
                 <div className="flex items-center gap-4 pt-2">
-                  <Button size="lg" className="h-11 px-8 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" asChild>
-                    <Link href="/auth/sign-up">Start Free Account</Link>
-                  </Button>
-                  
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button variant="outline" size="icon" className="h-11 w-11 rounded-lg border-slate-200 bg-white hover:bg-slate-50 transition-all" asChild>
@@ -143,16 +139,13 @@ export default function Home() {
 
         {/* Catchy CTA */}
         <section className="bg-slate-950 py-20 relative overflow-hidden">
-           <div className="wide-grid flex flex-col items-center text-center space-y-8 relative z-10">
+           <div className="app-container flex flex-col items-center text-center space-y-8 relative z-10">
               <div className="space-y-2">
                  <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-none">
                     Transform Your <span className="text-primary italic">Learning Flow.</span>
                  </h2>
                  <p className="text-slate-500 font-medium text-sm">Join the next generation of independent learners.</p>
               </div>
-              <Button size="lg" className="h-12 px-10 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] bg-white text-slate-950 hover:bg-primary hover:text-white transition-all shadow-2xl" asChild>
-                 <Link href="/auth/sign-up">Start Independent Learning</Link>
-              </Button>
            </div>
         </section>
       </div>
