@@ -35,24 +35,14 @@ export async function Navbar() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg" asChild>
-                      <Link href="/dashboard">
+                      <Link href={role === 'admin' ? "/admin" : "/dashboard"}>
                         <LayoutDashboard className="w-4.5 h-4.5 text-slate-500 hover:text-primary transition-colors" />
                       </Link>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-[10px] font-bold">Dashboard</TooltipContent>
-                </Tooltip>
-              )}
-              {role === 'admin' && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg" asChild>
-                      <Link href="/admin">
-                        <ShieldCheck className="w-4.5 h-4.5 text-slate-500 hover:text-primary transition-colors" />
-                      </Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-[10px] font-bold">Admin Hub</TooltipContent>
+                  <TooltipContent side="bottom" className="text-[10px] font-bold">
+                    {role === 'admin' ? 'Admin Hub' : 'Dashboard'}
+                  </TooltipContent>
                 </Tooltip>
               )}
             </nav>
