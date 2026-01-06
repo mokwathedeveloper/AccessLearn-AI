@@ -12,7 +12,8 @@ import {
   Search,
   ArrowUpRight,
   RefreshCw,
-  LayoutDashboard
+  LayoutDashboard,
+  Zap
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -107,28 +108,39 @@ export default async function AdminPage() {
                       <ActivityRow name="Intro_to_Physics.pdf" user="mike.r@school.org" status="failed" time="1h ago" />
                       <ActivityRow name="History_Summary.txt" user="jane.d@edu.com" status="completed" time="3h ago" />
                    </div>
-                   <div className="p-6 bg-slate-50/50 flex justify-center">
-                      <Button variant="ghost" className="text-primary font-bold text-sm">View All Activity</Button>
-                   </div>
-                </CardContent>
-             </Card>
-
-             {/* Quick Actions */}
-             <div className="space-y-6">
-                <Card className="border-none shadow-xl bg-slate-900 text-white rounded-3xl p-8 space-y-6">
-                   <h3 className="font-black text-lg uppercase tracking-tight">Platform Health</h3>
-                   <div className="space-y-4">
-                      <HealthBar label="API Response" percent={98} />
-                      <HealthBar label="AI Throughput" percent={85} />
-                      <HealthBar label="DB Connectivity" percent={100} />
-                   </div>
-                   <div className="pt-4 border-t border-white/10">
-                      <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl font-bold h-12">
-                         Full Diagnostic
-                      </Button>
-                   </div>
-                </Card>
-
+                                    <div className="p-6 bg-slate-50/50 flex justify-center">
+                                       <Tooltip>
+                                          <TooltipTrigger asChild>
+                                             <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5 rounded-full h-10 w-10">
+                                                <ChevronRight className="w-6 h-6" />
+                                             </Button>
+                                          </TooltipTrigger>
+                                          <TooltipContent>View All Activity</TooltipContent>
+                                       </Tooltip>
+                                    </div>
+                                 </CardContent>
+                              </Card>
+                   
+                              {/* Quick Actions */}
+                              <div className="space-y-6">
+                                 <Card className="border-none shadow-xl bg-slate-900 text-white rounded-3xl p-8 space-y-6">
+                                    <h3 className="font-black text-lg uppercase tracking-tight">Platform Health</h3>
+                                    <div className="space-y-4">
+                                       <HealthBar label="API Response" percent={98} />
+                                       <HealthBar label="AI Throughput" percent={85} />
+                                       <HealthBar label="DB Connectivity" percent={100} />
+                                    </div>
+                                    <div className="pt-4 border-t border-white/10">
+                                       <Tooltip>
+                                          <TooltipTrigger asChild>
+                                             <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl font-bold h-14 shadow-lg shadow-primary/20">
+                                                <Zap className="w-5 h-5 mr-2 fill-current" /> Run Diagnostic
+                                             </Button>
+                                          </TooltipTrigger>
+                                          <TooltipContent>Start Full Platform Scan</TooltipContent>
+                                       </Tooltip>
+                                    </div>
+                                 </Card>
                 <Card className="border-none shadow-xl bg-white rounded-3xl p-8 space-y-6">
                    <h3 className="font-black text-lg uppercase tracking-tight text-slate-800">Support Requests</h3>
                    <div className="flex flex-col gap-4">

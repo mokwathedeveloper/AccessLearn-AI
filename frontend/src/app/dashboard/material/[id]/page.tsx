@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AudioPlayer } from '@/components/audio-player'
-import { ArrowLeft, FileText, FileAudio, Sparkles, BookOpen, Clock, Download, Share2, Loader2, Printer } from 'lucide-react'
+import { ArrowLeft, FileText, FileAudio, Sparkles, BookOpen, Clock, Download, Share2, Loader2, Printer, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -190,26 +190,26 @@ export default async function MaterialDetailPage({ params }: PageProps) {
             <aside className="space-y-8">
                <Card className="border-none shadow-xl bg-teal-600 text-white rounded-3xl p-8 space-y-6 relative overflow-hidden group">
                   <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
-                  <h3 className="font-black text-xl relative z-10 uppercase tracking-tighter">Reader Settings</h3>
-                  <div className="space-y-4 relative z-10">
-                     <div className="flex justify-between items-center pb-4 border-b border-white/10">
-                        <span className="text-xs font-bold uppercase opacity-60">Text Size</span>
-                        <span className="text-sm font-black">Standard</span>
-                     </div>
-                     <div className="flex justify-between items-center pb-4 border-b border-white/10">
-                        <span className="text-xs font-bold uppercase opacity-60">Dyslexic Font</span>
-                        <span className="text-sm font-black">Off</span>
-                     </div>
-                     <div className="flex justify-between items-center">
-                        <span className="text-xs font-bold uppercase opacity-60">Line Spacing</span>
-                        <span className="text-sm font-black">Comfortable</span>
-                     </div>
-                  </div>
-                  <Button variant="secondary" className="w-full rounded-xl h-12 font-bold bg-white text-teal-700 hover:bg-slate-100">
-                     Apply Customizations
-                  </Button>
-               </Card>
-
+                                  <h3 className="font-black text-xl relative z-10 uppercase tracking-tighter">Reader Settings</h3>
+                                  <div className="space-y-4 relative z-10">
+                                     <div className="flex justify-between items-center pb-4 border-b border-white/10">
+                                        <span className="text-xs font-bold uppercase opacity-60">Text Size</span>
+                                        <div className="flex items-center gap-2">
+                                           <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 text-white font-bold">A-</Button>
+                                           <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 text-white font-bold">A+</Button>
+                                        </div>
+                                     </div>
+                                     <div className="flex justify-between items-center pb-4 border-b border-white/10">
+                                        <span className="text-xs font-bold uppercase opacity-60">Dyslexic Font</span>
+                                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 text-white">
+                                           <RefreshCw className="w-4 h-4" />
+                                        </Button>
+                                     </div>
+                                  </div>
+                                  <Button variant="secondary" className="w-full rounded-xl h-12 font-bold bg-white text-teal-700 hover:bg-slate-100 group">
+                                     <Sparkles className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" /> Sync Settings
+                                  </Button>
+                               </Card>
                <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm space-y-6">
                   <h3 className="font-black text-lg text-slate-800 uppercase tracking-tight">Material Info</h3>
                   <div className="space-y-4">

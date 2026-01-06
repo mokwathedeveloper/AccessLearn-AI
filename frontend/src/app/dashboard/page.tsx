@@ -2,7 +2,7 @@ import { requireRole } from '@/lib/auth/server'
 import { UploadSection } from './upload-section'
 import { MaterialsList } from './materials-list'
 import { Suspense } from 'react'
-import { Loader2, Plus, Sparkles, HelpCircle, Settings, BookOpen } from 'lucide-react'
+import { Loader2, Plus, Sparkles, HelpCircle, Settings, BookOpen, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -56,9 +56,14 @@ export default async function DashboardPage() {
                   <TooltipContent>Library Settings</TooltipContent>
                </Tooltip>
 
-               <Button className="rounded-xl shadow-lg shadow-primary/20 h-12 px-6">
-                  <Plus className="w-4 h-4 mr-2" /> New Material
-               </Button>
+               <Tooltip>
+                  <TooltipTrigger asChild>
+                     <Button className="rounded-xl shadow-lg shadow-primary/20 h-12 w-12 p-0">
+                        <Plus className="w-6 h-6" />
+                     </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Upload New Material</TooltipContent>
+               </Tooltip>
             </div>
           </div>
           
@@ -82,7 +87,14 @@ export default async function DashboardPage() {
                       </div>
                       <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Recent Materials</h2>
                    </div>
-                   <Button variant="ghost" size="sm" className="font-bold text-primary hover:bg-primary/5">View All</Button>
+                   <Tooltip>
+                      <TooltipTrigger asChild>
+                         <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/5">
+                            <ChevronRight className="w-5 h-5" />
+                         </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>View All Materials</TooltipContent>
+                   </Tooltip>
                 </div>
                 
                 <Suspense fallback={
