@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Mic, MicOff } from 'lucide-react'
+import { Mic, MicOff, Sparkles, Volume2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -98,7 +98,6 @@ export function VoiceNavigator() {
     } else if (cmd.includes('back')) {
       router.back()
     } else if (cmd.includes('read') || cmd.includes('speak')) {
-      // Find the main content text and read it
       const content = document.getElementById('main-content')?.innerText
       if (content && typeof window !== 'undefined' && window.speechSynthesis) {
         const utterance = new SpeechSynthesisUtterance(content.substring(0, 500) + '...')
@@ -148,7 +147,6 @@ export function VoiceNavigator() {
     }
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      // 'no-speech' is common and happens if user is quiet, no need to log as error
       if (event.error !== 'no-speech') {
         console.error('Speech recognition error', event.error)
       }
@@ -170,22 +168,27 @@ export function VoiceNavigator() {
   if (!supported) return null
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-2">
+    <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end space-y-4">
       {transcript && isListening && (
-        <div className="bg-black/80 text-white px-3 py-1 rounded-md text-sm mb-2 animate-in fade-in slide-in-from-bottom-2">
-          {transcript}...
+        <div className="bg-slate-900/90 backdrop-blur-md text-white px-6 py-3 rounded-2xl text-sm mb-2 shadow-2xl border border-white/10 animate-in fade-in slide-in-from-bottom-4 duration-500 font-bold tracking-tight">
+          <div className="flex items-center gap-3">
+             <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+             <span>{transcript}...</span>
+          </div>
         </div>
       )}
       <Button
         onClick={toggleListening}
         size="icon"
         className={cn(
-          "h-14 w-14 rounded-full shadow-lg transition-all duration-300",
-          isListening ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-blue-600 hover:bg-blue-700"
+          "h-16 w-16 rounded-3xl shadow-2xl transition-all duration-500 active:scale-90",
+          isListening 
+            ? "bg-red-500 hover:bg-red-600 ring-8 ring-red-500/20" 
+            : "bg-primary hover:bg-primary/90 ring-8 ring-primary/10 shadow-primary/40"
         )}
-        title="Voice Navigation (Try: 'Go to Dashboard', 'Upload', 'Back')"
+        title="Voice Navigation (Try: 'Go to Dashboard', 'Read Content', 'Back')"
       >
-        {isListening ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
+        {isListening ? <Mic className="h-7 w-7 animate-bounce" /> : <MicOff className="h-7 w-7" />}
       </Button>
     </div>
   )
