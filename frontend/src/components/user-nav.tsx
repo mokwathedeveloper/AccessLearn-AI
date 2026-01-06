@@ -53,21 +53,31 @@ export function UserNav({ email, role }: { email: string, role: string }) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push('/dashboard')} className="cursor-pointer py-3">
-          <LayoutDashboard className="mr-3 h-4 w-4 text-muted-foreground" />
-          <span>Dashboard</span>
+        <DropdownMenuItem onClick={() => router.push('/dashboard')} className="cursor-pointer py-3 rounded-lg focus:bg-primary/5 group">
+          <LayoutDashboard className="mr-3 h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
+          <span className="font-medium">Dashboard</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer py-3">
-          <User className="mr-3 h-4 w-4 text-muted-foreground" />
-          <span>Profile</span>
+        
+        {role === 'admin' && (
+          <DropdownMenuItem onClick={() => router.push('/admin')} className="cursor-pointer py-3 rounded-lg focus:bg-primary/5 group text-primary">
+            <ShieldCheck className="mr-3 h-4 w-4" />
+            <span className="font-bold">Admin Console</span>
+          </DropdownMenuItem>
+        )}
+
+        <DropdownMenuItem className="cursor-pointer py-3 rounded-lg focus:bg-primary/5 group">
+          <User className="mr-3 h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
+          <span className="font-medium">Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer py-3">
-          <Settings className="mr-3 h-4 w-4 text-muted-foreground" />
-          <span>Settings</span>
+        
+        <DropdownMenuItem className="cursor-pointer py-3 rounded-lg focus:bg-primary/5 group">
+          <Settings className="mr-3 h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
+          <span className="font-medium">Settings</span>
         </DropdownMenuItem>
+        
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer py-3 text-destructive focus:bg-destructive/5 focus:text-destructive">
-          <LogOut className="mr-3 h-4 w-4" />
+        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer py-3 rounded-lg text-destructive focus:bg-destructive/5 focus:text-destructive group">
+          <LogOut className="mr-3 h-4 w-4 transition-transform group-hover:translate-x-1" />
           <span className="font-bold">Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
