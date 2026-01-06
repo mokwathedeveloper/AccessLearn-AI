@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MaterialsService } from './materials.service';
 import { AiService } from '../ai/ai.service';
+import { ConfigService } from '@nestjs/config';
 // import { createClient } from '@supabase/supabase-js'; // Removed unused import
 
 // Mock Supabase Client
@@ -37,6 +38,16 @@ describe('MaterialsService', () => {
               simplified: 'Simplified',
             }),
             generateSpeech: jest.fn().mockResolvedValue(Buffer.from('audio')),
+          },
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              if (key === 'SUPABASE_URL') return 'https://test.supabase.co';
+              if (key === 'SUPABASE_SERVICE_ROLE_KEY') return 'test-key';
+              return null;
+            }),
           },
         },
       ],

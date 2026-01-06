@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 
 @Injectable()
@@ -6,20 +7,27 @@ export class AiService {
   private readonly logger = new Logger(AiService.name);
   private openai: OpenAI;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
+    const apiKey = this.configService.get<string>('DEEPSEEK_API_KEY') || '';
     this.openai = new OpenAI({
-      apiKey: process.env.DEEPSEEK_API_KEY || '',
-      baseURL: 'https://api.deepseek.com',
+      apiKey: apiKey,
+      baseURL: 'https://openrouter.ai/api/v1',
+      defaultHeaders: {
+        'HTTP-Referer': 'https://github.com/mokwathedeveloper/AccessLearn-AI', // Optional, for OpenRouter rankings
+        'X-Title': 'AccessLearn AI', // Optional
+      },
     });
   }
 
   /**
-   * Real AI Summarization and Simplification using DeepSeek AI.
+   * Real AI Summarization and Simplification using DeepSeek AI via OpenRouter.
    */
   async summarize(
     text: string,
   ): Promise<{ summary: string; simplified: string }> {
-    this.logger.log('Calling DeepSeek AI for summarization...');
+    this.logger.log(
+      'Calling DeepSeek AI (via OpenRouter) for summarization...',
+    );
 
     const prompt = `
       You are an expert accessibility educator. I will provide you with academic lecture material.
@@ -33,7 +41,7 @@ export class AiService {
 
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'deepseek-chat',
+        model: 'deepseek/deepseek-chat',
         messages: [{ role: 'user', content: prompt }],
         response_format: { type: 'json_object' },
       });
