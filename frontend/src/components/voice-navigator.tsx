@@ -46,6 +46,8 @@ interface SpeechRecognition extends EventTarget {
   onresult: (event: SpeechRecognitionEvent) => void
   onspeechend: () => void
   onerror: (event: SpeechRecognitionErrorEvent) => void
+  onstart?: () => void
+  onend?: () => void
 }
 
 interface SpeechRecognitionConstructor {
@@ -61,6 +63,7 @@ export function VoiceNavigator() {
   const [isListening, setIsListening] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [supported, setSupported] = useState(false)
+  const recognitionRef = React.useRef<SpeechRecognition | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -69,6 +72,12 @@ export function VoiceNavigator() {
       if (win.webkitSpeechRecognition || win.SpeechRecognition) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setSupported(true)
+      }
+    }
+    
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort()
       }
     }
   }, [])
@@ -88,45 +97,72 @@ export function VoiceNavigator() {
       router.push('/')
     } else if (cmd.includes('back')) {
       router.back()
+    } else if (cmd.includes('read') || cmd.includes('speak')) {
+      // Find the main content text and read it
+      const content = document.getElementById('main-content')?.innerText
+      if (content && typeof window !== 'undefined' && window.speechSynthesis) {
+        const utterance = new SpeechSynthesisUtterance(content.substring(0, 500) + '...')
+        window.speechSynthesis.speak(utterance)
+      }
     }
   }, [router])
 
   const toggleListening = () => {
     if (!supported) return
 
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+      setIsListening(false)
+      return
+    }
+
     const win = window as unknown as IWindow
     const SpeechRecognitionAPI = win.SpeechRecognition || win.webkitSpeechRecognition
     if (!SpeechRecognitionAPI) return
 
     const recognition = new SpeechRecognitionAPI()
+    recognitionRef.current = recognition
 
     recognition.continuous = false
     recognition.lang = 'en-US'
     recognition.interimResults = false
     recognition.maxAlternatives = 1
 
-    if (!isListening) {
-      recognition.start()
+    recognition.onstart = () => {
       setIsListening(true)
+      setTranscript('')
+    }
 
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
-        const lastResult = event.results[event.results.length - 1]
-        const text = lastResult[0].transcript
-        setTranscript(text)
-        handleCommand(text)
-        setIsListening(false)
-      }
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const lastResult = event.results[event.results.length - 1]
+      const text = lastResult[0].transcript
+      setTranscript(text)
+      handleCommand(text)
+    }
 
-      recognition.onspeechend = () => {
-        recognition.stop()
-        setIsListening(false)
-      }
+    recognition.onspeechend = () => {
+      recognition.stop()
+      setIsListening(false)
+    }
 
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      // 'no-speech' is common and happens if user is quiet, no need to log as error
+      if (event.error !== 'no-speech') {
         console.error('Speech recognition error', event.error)
-        setIsListening(false)
       }
-    } else {
+      setIsListening(false)
+    }
+
+    recognition.onend = () => {
+      setIsListening(false)
+    }
+
+    try {
+      recognition.start()
+    } catch (e) {
+      console.error('Failed to start recognition:', e)
       setIsListening(false)
     }
   }
