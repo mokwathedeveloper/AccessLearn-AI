@@ -103,10 +103,21 @@ export default function SignUpPage() {
                 </div>
                 
                 <div className="space-y-1.5">
-                  <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Password</Label>
+                  <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Create Password</Label>
                   <Input 
                     id="password" 
                     name="password" 
+                    type="password" 
+                    required 
+                    className="h-11 bg-slate-50 border-slate-100 focus:bg-white rounded-xl text-sm font-medium transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Confirm Password</Label>
+                  <Input 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
                     type="password" 
                     required 
                     className="h-11 bg-slate-50 border-slate-100 focus:bg-white rounded-xl text-sm font-medium transition-all"

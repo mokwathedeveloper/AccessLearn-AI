@@ -28,10 +28,15 @@ export async function signup(formData: FormData) {
 
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const confirmPassword = formData.get('confirmPassword') as string
   const role = (formData.get('role') as string) || 'student'
   const full_name = formData.get('full_name') as string
   const institution = formData.get('institution') as string
   const admission_number = formData.get('admission_number') as string
+
+  if (password !== confirmPassword) {
+    redirect('/auth/error?message=passwords-do-not-match')
+  }
 
   const { error } = await supabase.auth.signUp({
     email,
