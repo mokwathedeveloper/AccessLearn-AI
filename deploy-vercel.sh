@@ -1,16 +1,23 @@
 #!/bin/bash
 
-# 🚀 AccessLearn AI - Monorepo Deployment Fixer
-# This script ensures Vercel knows exactly where the Next.js app is.
+# 🚀 AccessLearn AI - Monorepo Deployment Fixer (Final Master Version)
+# This script ensures Vercel installs dependencies in the correct folder.
 
-echo "📂 Entering frontend directory..."
-cd frontend || exit 1
+echo "🧹 Cleaning up old configurations..."
+rm -f frontend/vercel.json
 
-echo "⚙️ Linking Vercel project..."
-# This ensures the current folder (frontend) is treated as the project root.
-vercel link --yes
+echo "📝 Creating Master vercel.json in root..."
+cat > vercel.json << 'EOF'
+{
+  "version": 2,
+  "buildCommand": "npm install --prefix frontend && npm run build --prefix frontend",
+  "outputDirectory": "frontend/.next",
+  "framework": "nextjs"
+}
+EOF
 
 echo "🌐 Deploying to Production..."
+# We deploy from root, but the vercel.json handles the subdirectory logic.
 vercel deploy --prod --yes \
   -e NEXT_PUBLIC_SUPABASE_URL="https://wlzcgkbtmwspcgepkcgq.supabase.co" \
   -e NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsemNna2J0bXdzcGNnZXBrY2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTc3MDAsImV4cCI6MjA4MzI3MzcwMH0.oE8ZDRkzyfAwvFFqP1OQsbGcr--QbTdTzPPUDJ-696I" \
