@@ -21,6 +21,13 @@ jest.mock('openai', () => {
         }),
       },
     },
+    audio: {
+      speech: {
+        create: jest.fn().mockResolvedValue({
+          arrayBuffer: jest.fn().mockResolvedValue(new ArrayBuffer(8)),
+        }),
+      },
+    },
   }));
 });
 
@@ -60,7 +67,7 @@ describe('AiService', () => {
 
   describe('generateSpeech', () => {
     it('should return a buffer', async () => {
-      const result = await service.generateSpeech();
+      const result = await service.generateSpeech('test text');
 
       expect(result).toBeInstanceOf(Buffer);
     });

@@ -130,19 +130,26 @@ export class RegistryService {
       const files = fileExists as any[];
 
       if (!files || files.length === 0) {
-        this.logger.warn(
-          `[SYNC] Material ${material.id} has missing file: ${material.file_url}`,
-        );
+        this.logger.warn(`[SYNC] Material ${material.id} has missing file: ${material.file_url}`);
         if (material.status !== 'failed') {
           await this.supabase
             .from('materials')
-            .update({
-              status: 'failed',
-              description:
-                (material.description || '') + ' [System: File Missing]',
+            .update({ 
+              status: 'failed', 
+              description: (material.description || '') + ' [System: File Missing]' 
             })
             .eq('id', material.id);
           missingFiles++;
+        }
+      } else {
+        // Backfill file_size if missing
+        const fileMeta = files.find(f => f.name === filename);
+        if (fileMeta && fileMeta.metadata?.size) {
+          await this.supabase
+            .from('materials')
+            .update({ file_size: fileMeta.metadata.size })
+            .eq('id', material.id)
+            .is('file_size', null);
         }
       }
     }

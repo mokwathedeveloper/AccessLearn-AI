@@ -46,7 +46,7 @@ AccessLearn AI is an AI-powered accessibility platform designed to help students
    ```bash
    cd backend
    cp .env.example .env
-   # Fill in your SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and GOOGLE_GENAI_API_KEY
+   # Fill in your SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DEEPSEEK_API_KEY (Summarization), and OPENAI_API_KEY (TTS)
    npm install
    ```
 

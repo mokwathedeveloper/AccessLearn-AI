@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Sparkles, RefreshCw, FileAudio, Loader2 } from 'lucide-react'
+import { Sparkles, RefreshCw, FileAudio, Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AudioPlayer } from '@/components/audio-player'
 
@@ -17,6 +17,26 @@ export function MaterialContent({ material, audioUrl }: MaterialContentProps) {
 
   const adjustFontSize = (delta: number) => {
     setFontSize((prev) => Math.max(12, Math.min(32, prev + delta)))
+  }
+
+  if (material.status === 'failed') {
+    return (
+      <div className="flex flex-col items-center justify-center p-20 bg-white rounded-3xl border border-red-100 shadow-xl space-y-6 text-center">
+        <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+          <AlertCircle className="w-10 h-10" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Neural Processing Failure</h2>
+          <p className="text-slate-500 max-w-md mx-auto text-sm font-medium">
+            Our AI engine encountered an error while decoding this document. This usually happens with complex layouts or encrypted files.
+          </p>
+        </div>
+        <Button variant="outline" className="rounded-xl h-12 px-8 font-bold border-red-200 text-red-600 hover:bg-red-50" onClick={() => window.location.reload()}>
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Retry Sync
+        </Button>
+      </div>
+    )
   }
 
   return (

@@ -4,30 +4,23 @@ import { redirect } from 'next/navigation'
 
 export type UserRole = 'student' | 'admin' | null
 
-export const getUserRole = cache(async (): Promise<UserRole> => {
+export const getUserProfile = cache(async () => {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return null
-  }
-
-  const { data: userProfile, error } = await supabase
+  const { data: profile } = await supabase
     .from('users')
-    .select('role')
+    .select('*')
     .eq('id', user.id)
     .single()
+  
+  return profile
+})
 
-  if (error || !userProfile) {
-    // Fallback or error handling
-    console.error('Error fetching user role:', error)
-    return null
-  }
-
-  return userProfile.role as UserRole
+export const getUserRole = cache(async (): Promise<UserRole> => {
+  const profile = await getUserProfile()
+  return profile?.role as UserRole || null
 })
 
 export async function requireRole(requiredRole: UserRole) {

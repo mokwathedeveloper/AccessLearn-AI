@@ -39,22 +39,39 @@ interface Stats {
 export function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [sweeping, setSweeping] = useState(false)
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/admin/stats`)
+      if (response.ok) {
+        const data = await response.json()
+        setStats(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSweep = async () => {
+    setSweeping(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/registry/sync`, {
+        method: 'POST',
+      })
+      if (response.ok) {
+        await fetchStats() // Refresh stats after sync
+      }
+    } catch (error) {
+      console.error('Sweep failed:', error)
+    } finally {
+      setSweeping(false)
+    }
+  }
 
   useEffect(() => {
-    async function fetchStats() {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/admin/stats`)
-        if (response.ok) {
-          const data = await response.json()
-          setStats(data)
-        }
-      } catch (error) {
-        console.error('Failed to fetch stats:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchStats()
     const interval = setInterval(fetchStats, 30000) // Refresh every 30s
     return () => clearInterval(interval)
@@ -134,8 +151,12 @@ export function AdminDashboard() {
                   <MasterHealth label="Gateway Response" percent={stats?.health.gatewayResponse || 100} />
                   <MasterHealth label="Neural Throughput" percent={stats?.health.neuralThroughput || 0} />
                </div>
-               <Button className="w-full bg-white text-slate-950 hover:bg-primary hover:text-white rounded-2xl font-black uppercase tracking-widest text-[10px] h-14 transition-all shadow-xl active:scale-95">
-                  Diagnostic Sweep
+               <Button 
+                 onClick={handleSweep}
+                 disabled={sweeping}
+                 className="w-full bg-white text-slate-950 hover:bg-primary hover:text-white rounded-2xl font-black uppercase tracking-widest text-[10px] h-14 transition-all shadow-xl active:scale-95"
+               >
+                  {sweeping ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Diagnostic Sweep'}
                </Button>
             </div>
 

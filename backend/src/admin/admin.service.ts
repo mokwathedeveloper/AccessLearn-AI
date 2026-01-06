@@ -45,13 +45,17 @@ export class AdminService {
       .from('performance_logs')
       .select('*', { count: 'exact', head: true });
 
-    // 4. Calculate Data Volume (Sum of file sizes from materials)
-    // We'll iterate through materials and sum up their sizes
-    // For this prototype, we'll return a dynamic estimation based on material count
-    const estimatedVolume = (materialCount || 0) * 2.4; // Average 2.4MB per asset
-    const formattedVolume = estimatedVolume > 1024 
-      ? `${(estimatedVolume / 1024).toFixed(1)}GB` 
-      : `${estimatedVolume.toFixed(1)}MB`;
+    // 4. Calculate Real Data Volume (Sum of file sizes from materials)
+    const { data: sizeData } = await this.supabase
+      .from('materials')
+      .select('file_size');
+
+    const totalBytes = (sizeData || []).reduce((acc, curr) => acc + (curr.file_size || 0), 0);
+    const mbVolume = totalBytes / (1024 * 1024);
+    
+    const formattedVolume = mbVolume > 1024 
+      ? `${(mbVolume / 1024).toFixed(1)}GB` 
+      : `${mbVolume.toFixed(1)}MB`;
 
     const syncSuccessNum = totalLogs && totalLogs > 0 
       ? Math.round(((successLogs || 0) / totalLogs) * 100) 

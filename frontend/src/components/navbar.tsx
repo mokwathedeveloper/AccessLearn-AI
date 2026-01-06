@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { UserNav } from './user-nav'
 import { Sparkles, LayoutDashboard } from 'lucide-react'
-import { getUserRole } from '@/lib/auth/server'
+import { getUserProfile } from '@/lib/auth/server'
 import {
   Tooltip,
   TooltipContent,
@@ -14,7 +14,8 @@ import {
 export async function Navbar() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const role = user ? await getUserRole() : null
+  const profile = user ? await getUserProfile() : null
+  const role = profile?.role
 
   return (
     <TooltipProvider>
@@ -50,7 +51,7 @@ export async function Navbar() {
 
           <div className="flex items-center gap-3">
             {user ? (
-              <UserNav email={user.email!} role={role || 'student'} />
+              <UserNav email={user.email!} role={role || 'student'} fullName={profile?.full_name} />
             ) : (
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="sm" className="font-bold text-[10px] uppercase tracking-widest px-4 h-9" asChild>

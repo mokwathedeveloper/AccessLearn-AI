@@ -45,6 +45,7 @@ export function UploadSection() {
           title: file.name,
           file_url: uploadData.path,
           file_type: file.type,
+          file_size: file.size,
           uploaded_by: user.id,
           status: 'pending'
         })
@@ -58,7 +59,8 @@ export function UploadSection() {
         .single()
       
       if (materialData.data) {
-        fetch('/api/materials/process', {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'
+        fetch(`${backendUrl}/materials/process`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ materialId: materialData.data.id }),

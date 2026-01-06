@@ -14,7 +14,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { LogOut, User, Settings, ShieldCheck, LayoutDashboard } from "lucide-react"
 
-export function UserNav({ email, role }: { email: string, role: string }) {
+export function UserNav({ email, role, fullName }: { email: string, role: string, fullName?: string }) {
   const router = useRouter()
   const supabase = createClient()
 
@@ -24,14 +24,16 @@ export function UserNav({ email, role }: { email: string, role: string }) {
     router.push('/')
   }
 
+  const displayName = fullName || email.split('@')[0]
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-primary/20">
           <Avatar className="h-10 w-10 border-2 border-primary/10">
-            <AvatarImage src={`https://avatar.vercel.sh/${email}.png`} alt={email} />
+            <AvatarImage src={`https://avatar.vercel.sh/${email}.png`} alt={displayName} />
             <AvatarFallback className="bg-primary/5 text-primary font-bold">
-              {email[0].toUpperCase()}
+              {displayName[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -40,7 +42,7 @@ export function UserNav({ email, role }: { email: string, role: string }) {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-2 p-2">
             <div className="flex items-center justify-between">
-               <p className="text-sm font-bold leading-none">{email.split('@')[0]}</p>
+               <p className="text-sm font-bold leading-none">{displayName}</p>
                {role === 'admin' && (
                  <div className="px-2 py-0.5 rounded-full bg-primary/10 text-[10px] font-black text-primary uppercase flex items-center gap-1">
                     <ShieldCheck className="w-3 h-3" /> Admin
