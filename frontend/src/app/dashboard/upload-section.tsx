@@ -47,6 +47,22 @@ export function UploadSection() {
 
       if (dbError) throw dbError
 
+      // 4. Trigger AI Processing via Backend
+      const materialData = await supabase
+        .from('materials')
+        .select('id')
+        .eq('file_url', uploadData.path)
+        .single()
+      
+      if (materialData.data) {
+        // Replace with your actual backend URL in production
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/materials/process`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ materialId: materialData.data.id }),
+        }).catch(err => console.error('Failed to trigger processing:', err))
+      }
+
       setFile(null)
       router.refresh() // Refresh the page to show new materials in the list (once implemented)
       alert('File uploaded successfully! Processing will begin shortly.')
