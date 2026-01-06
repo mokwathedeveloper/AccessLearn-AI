@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "@supabase-url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase-anon-key",
+    "NEXT_PUBLIC_BACKEND_URL": "@backend-url",
+    "NEXT_PUBLIC_APP_URL": "@app-url",
+    "SUPABASE_URL": "@supabase-url",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-key",
+    "DEEPSEEK_API_KEY": "@deepseek-api-key"
+  }
+}
