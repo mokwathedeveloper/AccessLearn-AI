@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Material ID is required' }, { status: 400 });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pdf = require('pdf-parse');
 
     const supabase = createClient(
@@ -49,9 +49,7 @@ export async function POST(request: NextRequest) {
     let text = '';
     if (material.file_type === 'application/pdf') {
       const buffer = Buffer.from(await fileBlob.arrayBuffer());
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       const pdfData = await pdf(buffer);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       text = pdfData.text;
     } else {
       text = await fileBlob.text();
@@ -112,9 +110,9 @@ export async function POST(request: NextRequest) {
     if (updateError) throw updateError;
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Processing error:', error);
-    // Attempt to mark as failed
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

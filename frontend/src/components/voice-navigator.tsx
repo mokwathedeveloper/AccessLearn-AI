@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Mic, MicOff, Sparkles, Volume2 } from 'lucide-react'
+import { Mic, MicOff, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'

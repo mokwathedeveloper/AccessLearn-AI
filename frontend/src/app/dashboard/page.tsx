@@ -113,7 +113,7 @@ export default async function DashboardPage() {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl -z-0 group-hover:bg-primary/30 transition-colors" />
                   <h3 className="font-black text-xl relative z-10">Accessibility Tip</h3>
                   <p className="text-slate-300 text-sm leading-relaxed relative z-10">
-                     Try using <strong>"Speak Content"</strong> voice command on any material page to hear the AI summary instantly.
+                     Try using <strong>&quot;Speak Content&quot;</strong> voice command on any material page to hear the AI summary instantly.
                   </p>
                   <div className="pt-4 relative z-10">
                      <Button variant="secondary" className="w-full rounded-xl font-bold bg-white/10 hover:bg-white/20 border-white/10 text-white">

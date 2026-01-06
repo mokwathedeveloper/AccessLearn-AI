@@ -69,7 +69,7 @@ export default function Home() {
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <h2 className="text-3xl font-bold sm:text-4xl md:text-5xl">The Platform Built for <span className="text-primary">Inclusion</span></h2>
           <p className="text-muted-foreground text-lg">
-            We've combined the latest LLMs with accessibility standards to create a seamless learning experience for every student.
+            We&apos;ve combined the latest LLMs with accessibility standards to create a seamless learning experience for every student.
           </p>
         </div>
 
