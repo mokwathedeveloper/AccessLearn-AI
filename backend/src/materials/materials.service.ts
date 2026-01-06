@@ -5,6 +5,8 @@ import {
   PostgrestError,
 } from '@supabase/supabase-js';
 import { AiService } from '../ai/ai.service';
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
+const pdf = require('pdf-parse');
 
 // Define the shape of the material record to avoid 'any'
 interface MaterialRecord {
@@ -12,6 +14,11 @@ interface MaterialRecord {
   file_url: string;
   uploaded_by: string;
   status: string;
+  file_type: string;
+}
+
+interface PdfData {
+  text: string;
 }
 
 @Injectable()
@@ -20,8 +27,6 @@ export class MaterialsService {
   private supabase: SupabaseClient;
 
   constructor(private readonly aiService: AiService) {
-    // Cast to generic SupabaseClient to avoid strict type mismatch in this specific lint config
-    // or ensure @supabase/supabase-js version matches strict expectations.
     this.supabase = createClient(
       process.env.SUPABASE_URL || '',
       process.env.SUPABASE_SERVICE_ROLE_KEY || '',
@@ -29,10 +34,12 @@ export class MaterialsService {
   }
 
   async processMaterial(materialId: string) {
-    this.logger.log(`Starting processing for material: ${materialId}`);
+    this.logger.log(
+      `[PROCESS] Starting processing for material: ${materialId}`,
+    );
 
     try {
-      // 1. Fetch material metadata with typed response
+      // 1. Fetch material metadata
       const response = await this.supabase
         .from('materials')
         .select('*')
@@ -43,9 +50,11 @@ export class MaterialsService {
       const data = response.data;
 
       const fetchError: PostgrestError | null = response.error;
+
       if (fetchError || !data) {
         throw new Error(`Material not found: ${fetchError?.message}`);
       }
+
       const material = data as MaterialRecord;
 
       // Update status to processing
@@ -55,29 +64,50 @@ export class MaterialsService {
         .eq('id', materialId);
 
       // 2. Download file from Storage
-      const { data: fileData, error: downloadError } =
+      this.logger.log(
+        `[DOWNLOAD] Fetching file from Storage: ${material.file_url}`,
+      );
+      const { data: fileBlob, error: downloadError } =
         await this.supabase.storage
           .from('lecture-materials')
           .download(material.file_url);
 
-      if (downloadError || !fileData) {
+      if (downloadError || !fileBlob) {
         throw new Error(`Failed to download file: ${downloadError?.message}`);
       }
 
-      // 3. Extract text
-      const text = await fileData.text();
+      // 3. Extract text based on file type
+      let text = '';
+      if (material.file_type === 'application/pdf') {
+        this.logger.log(`[EXTRACT] Parsing PDF content...`);
+        const buffer = Buffer.from(await fileBlob.arrayBuffer());
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        const pdfData = (await pdf(buffer)) as PdfData;
+        text = pdfData.text;
+      } else {
+        this.logger.log(`[EXTRACT] Reading plain text content...`);
+        text = await fileBlob.text();
+      }
 
-      // 4. Summarize and Simplify
+      if (!text || text.trim().length === 0) {
+        throw new Error('Extracted text is empty. Cannot process material.');
+      }
+
+      this.logger.log(
+        `[EXTRACT] Successfully extracted ${text.length} characters.`,
+      );
+
+      // 4. Summarize and Simplify using Gemini AI
       const { summary, simplified } = await this.aiService.summarize(text);
 
-      // 5. Generate Audio (TTS) from the simplified text (or summary)
-      const audioBuffer = await this.aiService.generateSpeech(simplified);
+      // 5. Generate Audio (TTS)
+      const audioBuffer = await this.aiService.generateSpeech();
 
       // 6. Upload Audio to Storage
-      // Uploading to the user's folder structure might be better, but keeping it simple for now or using the same path structure
       const userFolder = material.file_url.split('/')[0];
       const audioPath = `${userFolder}/audio_${materialId}.mp3`;
 
+      this.logger.log(`[UPLOAD] Uploading audio to storage: ${audioPath}`);
       const { error: uploadError } = await this.supabase.storage
         .from('lecture-materials')
         .upload(audioPath, audioBuffer, {
@@ -85,12 +115,7 @@ export class MaterialsService {
           upsert: true,
         });
 
-      if (uploadError) {
-        this.logger.error(`Failed to upload audio: ${uploadError.message}`);
-        // We continue even if audio fails, just logging it
-      }
-
-      // 7. Update Database with all results
+      // 7. Update Database
       const { error: updateError } = await this.supabase
         .from('materials')
         .update({
@@ -104,13 +129,12 @@ export class MaterialsService {
 
       if (updateError) throw updateError;
 
-      this.logger.log(`Successfully processed material: ${materialId}`);
+      this.logger.log(`[SUCCESS] Material processed: ${materialId}`);
       return { success: true };
     } catch (error) {
       const errorStack = error instanceof Error ? error.stack : '';
-
       this.logger.error(
-        `Failed to process material: ${materialId}`,
+        `[ERROR] Processing failed for ${materialId}`,
         errorStack,
       );
 

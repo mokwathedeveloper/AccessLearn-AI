@@ -1,34 +1,81 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
 
 @Injectable()
 export class AiService {
+  private readonly logger = new Logger(AiService.name);
+  private genAI: GoogleGenerativeAI;
+  private model: GenerativeModel;
+
+  constructor() {
+    const apiKey = process.env.GOOGLE_GENAI_API_KEY || '';
+    this.genAI = new GoogleGenerativeAI(apiKey);
+    // Use gemini-1.5-flash for speed and cost-efficiency in hackathon context
+    this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  }
+
   /**
-   * Placeholder for AI Summarization logic.
+   * Real AI Summarization and Simplification using Google Gemini.
    */
   async summarize(
     text: string,
   ): Promise<{ summary: string; simplified: string }> {
-    // Simulate AI processing delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    console.log('Summarizing text of length:', text.length);
+    this.logger.log('Calling Gemini AI for summarization...');
 
-    return {
-      summary: `This is an AI-generated summary of the content. It highlights the core concepts and key takeaways from the lecture material. (Original length: ${text.length} characters).`,
-      simplified: `This is a simplified version of the text. It uses easier vocabulary and shorter sentences to improve readability and accessibility for students with learning disabilities.`,
-    };
+    const prompt = `
+      You are an expert accessibility educator. I will provide you with academic lecture material.
+      Please provide two outputs in a clean JSON format:
+      1. "summary": A concise summary (max 3 sentences) highlighting the core academic concepts.
+      2. "simplified": A simplified version of the text using "Plain English" principles (shorter sentences, simpler vocabulary, no jargon) to help students with learning or cognitive disabilities understand the material better.
+
+      Text to process:
+      ${text.substring(0, 10000)} 
+    `;
+
+    try {
+      const result = await this.model.generateContent(prompt);
+      const response = result.response;
+      const responseText = response.text();
+
+      // Attempt to parse JSON from the response
+      try {
+        // Clean up markdown if AI wrapped it in ```json
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        const jsonStr = jsonMatch ? jsonMatch[0] : responseText;
+        const parsed = JSON.parse(jsonStr) as {
+          summary?: string;
+          simplified?: string;
+        };
+
+        return {
+          summary:
+            parsed.summary ||
+            'Summary generation succeeded but format was unexpected.',
+          simplified:
+            parsed.simplified ||
+            'Simplification succeeded but format was unexpected.',
+        };
+      } catch (parseError) {
+        this.logger.error('Failed to parse Gemini JSON response', parseError);
+        return {
+          summary: responseText.substring(0, 300),
+          simplified: responseText,
+        };
+      }
+    } catch (error) {
+      this.logger.error('Gemini API call failed', error);
+      throw new Error('AI processing failed. Please check your API key.');
+    }
   }
 
   /**
    * Placeholder for Text-to-Speech logic.
-   * Returns a buffer representing the MP3 audio.
    */
-  async generateSpeech(text: string): Promise<Buffer> {
-    // Simulate AI processing delay
+  async generateSpeech(): Promise<Buffer> {
     await new Promise((resolve) => setTimeout(resolve, 100));
-    console.log('Generating speech for text length:', text.length);
-
-    // In a real app, this would be the buffer from the TTS provider.
-    // We'll return a minimal valid MP3 buffer or just a dummy buffer for the prototype.
-    return Buffer.from('Dummy MP3 content');
+    this.logger.log('Generating placeholder speech buffer...');
+    return Buffer.from(
+      'Dummy MP3 content - real TTS requires Cloud API integration',
+    );
   }
 }
