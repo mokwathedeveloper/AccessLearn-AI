@@ -70,7 +70,7 @@ export function UserNav({ email, role }: { email: string, role: string }) {
           <span className="font-medium">Profile</span>
         </DropdownMenuItem>
         
-        <DropdownMenuItem className="cursor-pointer py-3 rounded-lg focus:bg-primary/5 group">
+        <DropdownMenuItem onClick={() => router.push('/settings')} className="cursor-pointer py-3 rounded-lg focus:bg-primary/5 group">
           <Settings className="mr-3 h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
           <span className="font-medium">Settings</span>
         </DropdownMenuItem>

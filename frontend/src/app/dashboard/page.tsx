@@ -40,7 +40,9 @@ export default async function DashboardPage() {
                
                <div className="flex items-center gap-1.5 p-1 bg-white rounded-lg border border-slate-200 shadow-sm">
                   <DashboardAction icon={<Info className="w-4 h-4" />} label="Quick Start Guide" />
-                  <DashboardAction icon={<Settings className="w-4 h-4" />} label="Encryption Key" />
+                  <Link href="/settings">
+                    <DashboardAction icon={<Settings className="w-4 h-4" />} label="Encryption Key" />
+                  </Link>
                   
                   <div className="h-4 w-[1px] bg-slate-200 mx-1" />
 

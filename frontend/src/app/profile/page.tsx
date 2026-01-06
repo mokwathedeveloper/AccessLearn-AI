@@ -63,8 +63,10 @@ export default async function ProfilePage() {
             <div className="flex items-center gap-2">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl bg-white">
-                    <Settings className="w-4.5 h-4.5 text-slate-500" />
+                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl bg-white" asChild>
+                    <Link href="/settings">
+                      <Settings className="w-4.5 h-4.5 text-slate-500" />
+                    </Link>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Settings</TooltipContent>
