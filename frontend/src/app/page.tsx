@@ -26,7 +26,7 @@ export default function Home() {
         <div className="container mx-auto max-w-5xl space-y-10 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <Sparkles className="w-4 h-4" />
-            <span>AI-Powered Accessibility for the Next Generation</span>
+            <span>AccessLearn AI v2.0 • Inclusive Education</span>
           </div>
           
           <h1 className="text-5xl font-black tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-foreground">
@@ -165,7 +165,10 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description, delay }: { icon: React.ReactNode, title: string, description: string, delay: string }) {
   return (
-    <Card className={`group relative overflow-hidden border-none shadow-xl bg-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-${delay}`}>
+    <Card 
+      className="group relative overflow-hidden border-none shadow-xl bg-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 animate-in fade-in slide-in-from-bottom-8"
+      style={{ animationDuration: '1000ms', animationDelay: `${delay}ms`, animationFillMode: 'both' }}
+    >
       <div className="absolute top-0 left-0 w-full h-1 bg-primary/20 group-hover:bg-primary transition-colors" />
       <CardContent className="p-8 space-y-4 pt-10">
         <div className="mb-6 inline-block p-4 bg-primary/5 rounded-2xl group-hover:bg-primary/10 transition-colors">

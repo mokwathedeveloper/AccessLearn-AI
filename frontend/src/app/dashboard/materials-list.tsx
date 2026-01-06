@@ -97,12 +97,12 @@ export async function MaterialsList() {
 
 function FeatureIndicator({ active, icon, label }: { active: boolean, icon: React.ReactNode, label: string }) {
    if (!active) return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-dashed border-slate-200 text-slate-300 text-[10px] font-bold uppercase grayscale">
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-dashed border-slate-200 text-slate-300 text-[11px] font-black uppercase grayscale">
          {icon} {label}
       </div>
    )
    return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-50 border border-teal-100 text-teal-600 text-[10px] font-bold uppercase">
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-[11px] font-black uppercase shadow-sm shadow-primary/5">
          {icon} {label}
       </div>
    )
