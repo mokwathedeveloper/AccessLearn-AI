@@ -9,13 +9,13 @@ export class MaterialsController {
   @HttpCode(HttpStatus.OK)
   async process(@Body('materialId') materialId: string) {
     // We trigger this asynchronously so the frontend doesn't wait
-    // eslint-disable-next-line @typescript-eslint/await-thenable
+
     await Promise.resolve(); // satisfy require-await
 
     this.materialsService.processMaterial(materialId).catch((err) => {
       console.error('Async processing failed:', err);
     });
-    
+
     return { message: 'Processing started' };
   }
 }
