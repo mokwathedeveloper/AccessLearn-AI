@@ -35,7 +35,8 @@ describe('MaterialsController', () => {
       expect(result).toEqual({ message: 'Processing started' });
       // We can't easily await the un-awaited promise inside the controller method from here without changing implementation,
       // but we can verify the mock was called if we wait a tick.
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(materialsService.processMaterial).toHaveBeenCalledWith(materialId);
     });
   });

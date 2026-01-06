@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AudioPlayer } from '@/components/audio-player'
-import { ArrowLeft, Download, FileText, FileAudio } from 'lucide-react'
+import { ArrowLeft, FileText, FileAudio } from 'lucide-react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 

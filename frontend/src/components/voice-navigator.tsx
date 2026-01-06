@@ -6,10 +6,55 @@ import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
-// Add type definition for Web Speech API
+// --- Web Speech API Types ---
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList
+  resultIndex: number
+}
+
+interface SpeechRecognitionResultList {
+  length: number
+  item(index: number): SpeechRecognitionResult
+  [index: number]: SpeechRecognitionResult
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean
+  length: number
+  item(index: number): SpeechRecognitionAlternative
+  [index: number]: SpeechRecognitionAlternative
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string
+  confidence: number
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string
+  message: string
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean
+  lang: string
+  interimResults: boolean
+  maxAlternatives: number
+  start(): void
+  stop(): void
+  abort(): void
+  onresult: (event: SpeechRecognitionEvent) => void
+  onspeechend: () => void
+  onerror: (event: SpeechRecognitionErrorEvent) => void
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognition
+}
+
 interface IWindow extends Window {
-  webkitSpeechRecognition: any
-  SpeechRecognition: any
+  webkitSpeechRecognition?: SpeechRecognitionConstructor
+  SpeechRecognition?: SpeechRecognitionConstructor
 }
 
 export function VoiceNavigator() {
@@ -19,8 +64,12 @@ export function VoiceNavigator() {
   const router = useRouter()
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      setSupported(true)
+    if (typeof window !== 'undefined') {
+      const win = window as unknown as IWindow
+      if (win.webkitSpeechRecognition || win.SpeechRecognition) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSupported(true)
+      }
     }
   }, [])
 
@@ -31,13 +80,11 @@ export function VoiceNavigator() {
     if (cmd.includes('dashboard') || cmd.includes('home')) {
       router.push('/dashboard')
     } else if (cmd.includes('upload')) {
-      // Logic to scroll to upload section could go here
       router.push('/dashboard')
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }, 500)
     } else if (cmd.includes('sign out') || cmd.includes('logout')) {
-      // In a real app, trigger logout action
       router.push('/')
     } else if (cmd.includes('back')) {
       router.back()
@@ -47,8 +94,10 @@ export function VoiceNavigator() {
   const toggleListening = () => {
     if (!supported) return
 
-    const { webkitSpeechRecognition, SpeechRecognition } = window as unknown as IWindow
-    const SpeechRecognitionAPI = SpeechRecognition || webkitSpeechRecognition
+    const win = window as unknown as IWindow
+    const SpeechRecognitionAPI = win.SpeechRecognition || win.webkitSpeechRecognition
+    if (!SpeechRecognitionAPI) return
+
     const recognition = new SpeechRecognitionAPI()
 
     recognition.continuous = false
@@ -60,7 +109,7 @@ export function VoiceNavigator() {
       recognition.start()
       setIsListening(true)
 
-      recognition.onresult = (event: any) => {
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
         const lastResult = event.results[event.results.length - 1]
         const text = lastResult[0].transcript
         setTranscript(text)
@@ -73,14 +122,11 @@ export function VoiceNavigator() {
         setIsListening(false)
       }
 
-      recognition.onerror = (event: any) => {
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error', event.error)
         setIsListening(false)
       }
     } else {
-      // We can't easily "stop" and keep listening logic clean without a ref in this simple component,
-      // but for toggle, we just let it stop naturally or user waits.
-      // Re-implementing full toggle logic requires keeping the instance in a ref.
       setIsListening(false)
     }
   }
