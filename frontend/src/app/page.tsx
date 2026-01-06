@@ -11,7 +11,8 @@ import {
   Lock,
   Cpu,
   Zap,
-  ArrowUpRight
+  ArrowUpRight,
+  Shield
 } from 'lucide-react'
 import {
   Tooltip,
