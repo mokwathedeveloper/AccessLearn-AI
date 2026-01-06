@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/tooltip"
 import Link from 'next/link'
 import { PerformanceLogs } from './performance-logs'
+import { SyncButton } from './sync-button'
 
 export default async function AdminPage() {
   await requireRole('admin')
@@ -50,14 +51,7 @@ export default async function AdminPage() {
                   <TooltipContent>Platform Logs</TooltipContent>
                </Tooltip>
 
-               <Tooltip>
-                  <TooltipTrigger asChild>
-                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl">
-                        <RefreshCw className="w-5 h-5 text-slate-500" />
-                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Registry Sync</TooltipContent>
-               </Tooltip>
+               <SyncButton />
 
                <div className="h-6 w-[1px] bg-slate-200 mx-1" />
 

@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MaterialsModule } from './materials/materials.module';
 import { AiModule } from './ai/ai.module';
+import { RegistryModule } from './registry/registry.module';
 import { PerformanceInterceptor } from './common/interceptors/performance.interceptor';
 
 @Module({
@@ -14,6 +15,7 @@ import { PerformanceInterceptor } from './common/interceptors/performance.interc
     }),
     MaterialsModule,
     AiModule,
+    RegistryModule,
   ],
   controllers: [AppController],
   providers: [
