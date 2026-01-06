@@ -84,12 +84,26 @@ export async function POST(request: NextRequest) {
       parsedAi = { summary: aiContent, simplified: aiContent };
     }
 
-    // 5. Update Database
+    // 5. Generate Audio (TTS) Placeholder
+    // In production, you would call a real TTS API here
+    const audioBuffer = Buffer.from('Dummy MP3 content');
+    const userFolder = material.file_url.split('/')[0];
+    const audioPath = `${userFolder}/audio_${materialId}.mp3`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('lecture-materials')
+      .upload(audioPath, audioBuffer, {
+        contentType: 'audio/mpeg',
+        upsert: true,
+      });
+
+    // 6. Update Database
     const { error: updateError } = await supabase
       .from('materials')
       .update({
         summary: parsedAi.summary,
         simplified_content: parsedAi.simplified,
+        audio_url: uploadError ? null : audioPath,
         status: 'completed',
         updated_at: new Date().toISOString(),
       })
