@@ -1,17 +1,13 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { 
   FileText, 
   Headphones, 
   Mic, 
   Brain, 
-  ArrowRight, 
-  CheckCircle2, 
   Sparkles,
   Zap,
   ArrowUpRight,
-  Shield,
   Play
 } from 'lucide-react'
 import {
@@ -24,130 +20,122 @@ import {
 export default function Home() {
   return (
     <TooltipProvider>
-      <div className="flex flex-col min-h-screen">
-        {/* Master Hero Section */}
-        <section className="relative px-6 py-32 md:py-56 overflow-hidden flex items-center justify-center">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[180px] animate-pulse" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-teal-400/10 rounded-full blur-[200px]" />
-          </div>
-          
-          <div className="container mx-auto max-w-6xl space-y-16 text-center">
-            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/40 backdrop-blur-md border border-white/50 text-primary text-sm font-black tracking-widest uppercase animate-in fade-in slide-in-from-top-4 duration-1000 shadow-xl">
-              <Sparkles className="w-5 h-5" />
-              <span>The Gold Standard of Accessibility</span>
-            </div>
-            
-            <h1 className="text-6xl font-black tracking-tighter sm:text-7xl md:text-8xl lg:text-9xl text-slate-900 leading-[0.9]">
-              AI for <br/> <span className="text-primary italic">Every</span> Learner
-            </h1>
-            
-            <p className="mx-auto max-w-3xl text-xl text-slate-500/80 md:text-2xl leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-              AccessLearn AI breaks the silence of inaccessible academic materials. 
-              Turn static text into dynamic, multisensory learning experiences instantly.
-            </p>
-            
-            <div className="flex items-center justify-center gap-8 pt-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button size="icon" className="h-24 w-24 rounded-[2.5rem] shadow-[0_20px_50px_-10px_rgba(var(--primary),0.4)] hover:scale-110 active:scale-95 transition-all group p-0" asChild>
-                    <Link href="/auth/sign-up">
-                      <Zap className="w-10 h-10 fill-current" />
-                    </Link>
+      <div className="flex flex-col min-h-screen bg-white overflow-x-hidden">
+        {/* Master OG Hero Section */}
+        <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-48">
+          <div className="wide-container">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-8 text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 text-[10px] font-black tracking-widest uppercase text-primary border border-primary/10">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Version 2.0 Master Release</span>
+                </div>
+                
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight">
+                  Academic Content <br/>
+                  <span className="text-primary italic font-serif">Redefined.</span>
+                </h1>
+                
+                <p className="max-w-xl text-lg text-slate-500 font-medium leading-relaxed">
+                  The world&apos;s first unified accessibility engine. Convert documents into audio, summaries, and simplified text with neural precision.
+                </p>
+                
+                <div className="flex items-center gap-4 pt-4">
+                  <Button size="lg" className="rounded-xl h-14 px-8 font-bold shadow-xl shadow-primary/20" asChild>
+                    <Link href="/auth/sign-up">Start Learning Free</Link>
                   </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="font-bold">Start Your Journey</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-24 w-24 rounded-[2.5rem] border-4 border-white shadow-2xl bg-white/50 backdrop-blur-md hover:bg-white transition-all group" asChild>
-                    <Link href="/auth/sign-in">
-                      <Play className="w-10 h-10 text-primary ml-1 fill-current" />
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="font-bold">Resume Learning</TooltipContent>
-              </Tooltip>
-            </div>
-          </div>
-        </section>
-
-        {/* Master Features Grid */}
-        <section className="container mx-auto px-6 py-40">
-          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-            <FeatureCard 
-              icon={<FileText className="w-12 h-12" />}
-              title="Smart Insights"
-              description="Summarize thousand-page readings into key core concepts in seconds."
-              delay="0"
-            />
-            <FeatureCard 
-              icon={<Brain className="w-12 h-12" />}
-              title="Cognitive Ease"
-              description="Simplifies academic jargon into high-comprehension plain English."
-              delay="100"
-            />
-            <FeatureCard 
-              icon={<Headphones className="w-12 h-12" />}
-              title="Adaptive Audio"
-              description="Natural AI speech synthesis tuned for academic focus."
-              delay="200"
-            />
-            <FeatureCard 
-              icon={<Mic className="w-12 h-12" />}
-              title="Hands-Free"
-              description="Full platform control using high-accuracy voice recognition."
-              delay="300"
-            />
-          </div>
-        </section>
-
-        {/* Floating CTA Icon Section */}
-        <section className="bg-slate-900 py-40 relative overflow-hidden">
-           <div className="container mx-auto px-6 flex flex-col items-center space-y-16">
-              <div className="max-w-2xl text-center space-y-6">
-                 <h2 className="text-5xl font-black text-white tracking-tight">Ready to Win?</h2>
-                 <p className="text-slate-400 text-xl font-medium">Join the elite students using AI to master their education.</p>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" className="h-14 w-14 rounded-xl border-slate-200" asChild>
+                        <Link href="/auth/sign-in">
+                          <Play className="w-5 h-5 text-primary ml-0.5 fill-current" />
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">Login to Dashboard</TooltipContent>
+                  </Tooltip>
+                </div>
               </div>
-              
-              <Tooltip>
-                 <TooltipTrigger asChild>
-                    <Button className="h-32 w-32 rounded-[3.5rem] bg-white text-slate-900 hover:bg-primary hover:text-white transition-all duration-500 group" asChild>
-                       <Link href="/auth/sign-up">
-                          <ArrowUpRight className="w-16 h-16 transition-transform group-hover:translate-x-2 group-hover:-translate-y-2" />
-                       </Link>
-                    </Button>
-                 </TooltipTrigger>
-                 <TooltipContent side="top" className="text-lg font-black">Create Free Account</TooltipContent>
-              </Tooltip>
-           </div>
+
+              <div className="relative hidden lg:block">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/5 rounded-full blur-[100px] -z-10" />
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-6 pt-12">
+                    <FeatureBox icon={<Brain className="w-6 h-6" />} title="Simplification" />
+                    <FeatureBox icon={<FileText className="w-6 h-6" />} title="Analysis" />
+                  </div>
+                  <div className="space-y-6">
+                    <FeatureBox icon={<Headphones className="w-6 h-6" />} title="Neural TTS" />
+                    <FeatureBox icon={<Mic className="w-6 h-6" />} title="Voice Flow" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Dense Features Grid */}
+        <section className="bg-slate-50 py-24 lg:py-32">
+          <div className="wide-container">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <PremiumFeature 
+                icon={<Sparkles className="w-5 h-5" />}
+                title="Deep Intelligence"
+                desc="Summarize materials using DeepSeek V3 neural weights."
+              />
+              <PremiumFeature 
+                icon={<Zap className="w-5 h-5" />}
+                title="Instant Flow"
+                desc="Real-time document processing and synchronization."
+              />
+              <PremiumFeature 
+                icon={<Headphones className="w-5 h-5" />}
+                title="High Fidelity"
+                desc="Crystal clear AI voice generation for better focus."
+              />
+              <PremiumFeature 
+                icon={<ArrowUpRight className="w-5 h-5" />}
+                title="Growth Ready"
+                desc="Built on Supabase for enterprise-grade scalability."
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Master CTA */}
+        <section className="py-24 lg:py-40 bg-slate-900 text-white">
+          <div className="wide-container flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight">Ready to Master Your <br/> Education?</h2>
+              <p className="text-slate-400 text-lg font-medium">Join 5,000+ students today.</p>
+            </div>
+            <Button size="lg" className="h-16 px-12 rounded-2xl bg-white text-slate-950 hover:bg-primary hover:text-white transition-all text-lg font-black uppercase tracking-widest" asChild>
+              <Link href="/auth/sign-up text-slate-900">Create Account</Link>
+            </Button>
+          </div>
         </section>
       </div>
     </TooltipProvider>
   )
 }
 
-function FeatureCard({ icon, title, description, delay }: { icon: React.ReactNode, title: string, description: string, delay: string }) {
+function FeatureBox({ icon, title }: { icon: React.ReactNode, title: string }) {
   return (
-    <Card 
-      className="glass-card group p-10 space-y-8 animate-in fade-in slide-in-from-bottom-12 transition-all duration-500 hover:-translate-y-4 hover:rotate-1"
-      style={{ animationDelay: `${delay}ms`, animationFillMode: 'both' }}
-    >
-      <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-        {icon}
+    <div className="p-8 rounded-[2rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col gap-4 items-start group hover:border-primary/20 transition-all">
+      <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary">{icon}</div>
+      <span className="text-sm font-black uppercase tracking-widest text-slate-400">{title}</span>
+    </div>
+  )
+}
+
+function PremiumFeature({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
+  return (
+    <div className="p-8 rounded-2xl bg-white border border-slate-200/60 flex flex-col gap-4 hover:shadow-lg transition-all">
+      <div className="text-primary">{icon}</div>
+      <div className="space-y-1">
+        <h3 className="font-black text-sm uppercase tracking-tight text-slate-900">{title}</h3>
+        <p className="text-slate-500 text-xs font-medium leading-relaxed">{desc}</p>
       </div>
-      <div className="space-y-4">
-        <h3 className="text-2xl font-black tracking-tight">{title}</h3>
-        <p className="text-slate-500 font-medium leading-relaxed">
-          {description}
-        </p>
-      </div>
-      <div className="pt-4 flex justify-end">
-         <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <ArrowUpRight className="w-5 h-5 text-primary" />
-         </div>
-      </div>
-    </Card>
+    </div>
   )
 }
