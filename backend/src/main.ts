@@ -4,9 +4,21 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS for production
+  // Enable CORS for production and development
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+      ].filter(Boolean);
+      
+      if (!origin || allowedOrigins.some(o => origin.startsWith(o!))) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   });
 

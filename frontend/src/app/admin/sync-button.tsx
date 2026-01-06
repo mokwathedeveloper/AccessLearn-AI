@@ -15,14 +15,23 @@ export function SyncButton() {
 
   const handleSync = async () => {
     setSyncing(true)
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'
+    
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost' && backendUrl.includes('vercel.app')) {
+      console.warn('SyncButton: Calling production backend from localhost. This might trigger CORS issues.')
+    }
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}/registry/sync`, {
+      const response = await fetch(`${backendUrl}/registry/sync`, {
         method: 'POST',
       })
       
       if (response.ok) {
         setSuccess(true)
         setTimeout(() => setSuccess(false), 3000)
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Sync failed with status:', response.status, errorData)
       }
     } catch (error) {
       console.error('Sync failed:', error)
