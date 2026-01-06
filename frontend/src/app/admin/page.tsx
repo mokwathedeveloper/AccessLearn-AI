@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import Link from 'next/link'
+import { PerformanceLogs } from './performance-logs'
 
 export default async function AdminPage() {
   await requireRole('admin')
@@ -97,11 +98,7 @@ export default async function AdminPage() {
                    </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                   <div className="divide-y divide-slate-50">
-                      <MasterActivityRow name="Core_Syllabus_Bio.pdf" status="synced" time="2m ago" />
-                      <MasterActivityRow name="Lab_Report_Final.txt" status="live" time="5m ago" />
-                      <MasterActivityRow name="Prep_Notes_Eco.pdf" status="synced" time="12m ago" />
-                   </div>
+                   <PerformanceLogs />
                    <div className="p-8 bg-slate-50/50 flex justify-center border-t border-slate-50">
                       <Button variant="ghost" size="sm" className="text-primary font-black text-[10px] uppercase tracking-[0.2em] h-10 px-10 rounded-full hover:bg-white hover:shadow-md transition-all">Full Intelligence Archive</Button>
                    </div>
