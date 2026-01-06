@@ -59,7 +59,7 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
         onEnded={() => setIsPlaying(false)}
       />
       
-      <Button variant="ghost" size="icon" onClick={togglePlay}>
+      <Button variant="ghost" size="icon" onClick={togglePlay} aria-label={isPlaying ? 'Pause audio' : 'Play audio'}>
         {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
       </Button>
 
@@ -69,11 +69,11 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
           max={100}
           step={1}
           onValueChange={handleSeek}
-          aria-label="Audio progress"
+          aria-label="Seek audio"
         />
       </div>
 
-      <Button variant="ghost" size="icon" onClick={toggleMute}>
+      <Button variant="ghost" size="icon" onClick={toggleMute} aria-label={isMuted ? 'Unmute' : 'Mute'}>
         {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
       </Button>
     </div>
