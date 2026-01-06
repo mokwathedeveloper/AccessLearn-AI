@@ -5,6 +5,7 @@ import { Suspense } from 'react'
 import { Loader2, Plus, Sparkles, Settings, LayoutGrid, Info, Mic, Search, BookOpen, Clock, ShieldCheck, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import Link from 'next/link'
 import {
   Tooltip,
   TooltipContent,
