@@ -42,12 +42,8 @@ export class AiService {
       return await Promise.race([this.executeSummarize(text), timeoutPromise]);
     } catch (error) {
       this.logger.error('AI Processing failed or timed out', error);
-      return {
-        summary:
-          'Automated summary unavailable. Please check API configurations.',
-        simplified:
-          text.substring(0, 1000) + '... [Auto-simplification failed]',
-      };
+      // Re-throw so the MaterialsService can mark the job as failed properly
+      throw error;
     }
   }
 

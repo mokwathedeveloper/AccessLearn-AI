@@ -154,23 +154,29 @@ export class MaterialsService {
         this.logger.log(`[TTS] Synthesizing speech for summary...`);
         const audioBuffer = await this.aiService.generateSpeech(summary);
 
-        // 6. Upload Audio to Storage
-        const userFolder = material.file_url.split('/')[0];
-        audioPath = `${userFolder}/audio_${materialId}.mp3`;
+        if (audioBuffer && audioBuffer.length > 100) {
+          // 6. Upload Audio to Storage
+          const userFolder = material.file_url.split('/')[0];
+          audioPath = `${userFolder}/audio_${materialId}.mp3`;
 
-        this.logger.log(`[STORAGE] Uploading neural audio: ${audioPath}`);
-        const { error: uploadError } = await this.supabase.storage
-          .from('lecture-materials')
-          .upload(audioPath, audioBuffer, {
-            contentType: 'audio/mpeg',
-            upsert: true,
-          });
+          this.logger.log(`[STORAGE] Uploading neural audio: ${audioPath}`);
+          const { error: uploadError } = await this.supabase.storage
+            .from('lecture-materials')
+            .upload(audioPath, audioBuffer, {
+              contentType: 'audio/mpeg',
+              upsert: true,
+            });
 
-        if (uploadError) {
+          if (uploadError) {
+            this.logger.warn(
+              `[STORAGE] Audio upload failed but continuing: ${uploadError.message}`,
+            );
+            audioPath = null;
+          }
+        } else {
           this.logger.warn(
-            `[STORAGE] Audio upload failed but continuing: ${uploadError.message}`,
+            `[TTS] Audio synthesis returned invalid buffer. Skipping upload.`,
           );
-          audioPath = null;
         }
       }
 
