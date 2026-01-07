@@ -33,6 +33,27 @@ export class AiService {
   async summarize(
     text: string,
   ): Promise<{ summary: string; simplified: string }> {
+    const timeoutPromise = new Promise<{ summary: string; simplified: string }>(
+      (_, reject) =>
+        setTimeout(() => reject(new Error('AI Analysis Timeout')), 35000),
+    );
+
+    try {
+      return await Promise.race([this.executeSummarize(text), timeoutPromise]);
+    } catch (error) {
+      this.logger.error('AI Processing failed or timed out', error);
+      return {
+        summary:
+          'Automated summary unavailable. Please check API configurations.',
+        simplified:
+          text.substring(0, 1000) + '... [Auto-simplification failed]',
+      };
+    }
+  }
+
+  private async executeSummarize(
+    text: string,
+  ): Promise<{ summary: string; simplified: string }> {
     // Priority 1: DeepSeek (if key available)
     if (this.configService.get<string>('DEEPSEEK_API_KEY')) {
       try {
@@ -54,12 +75,7 @@ export class AiService {
       }
     }
 
-    // Ultimate Fallback
-    return {
-      summary:
-        'Automated summary unavailable. Please check API configurations.',
-      simplified: text.substring(0, 1000) + '... [Auto-simplification failed]',
-    };
+    throw new Error('No AI providers available');
   }
 
   private async summarizeWithDeepSeek(text: string) {

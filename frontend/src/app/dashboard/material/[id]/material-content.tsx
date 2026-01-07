@@ -1,11 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Sparkles, RefreshCw, FileAudio, Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AudioPlayer } from '@/components/audio-player'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+
+import { getBackendUrl } from '@/lib/config'
 
 interface Material {
   id: string;
@@ -22,12 +26,98 @@ interface MaterialContentProps {
   audioUrl: string | null;
 }
 
-export function MaterialContent({ material, audioUrl }: MaterialContentProps) {
-  const [fontSize, setFontSize] = useState(18) // Default base font size in pixels
+export function MaterialContent({ material: initialMaterial, audioUrl: initialAudioUrl }: MaterialContentProps) {
+  const [material, setMaterial] = useState<Material>(initialMaterial)
+  const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(initialAudioUrl)
+  const [fontSize, setFontSize] = useState(18)
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [showSyncWarning, setShowSyncWarning] = useState(false)
+  const supabase = useMemo(() => createClient(), [])
+  const router = useRouter()
 
   const adjustFontSize = (delta: number) => {
     setFontSize((prev) => Math.max(12, Math.min(32, prev + delta)))
   }
+
+  const triggerReprocess = async () => {
+    setIsSyncing(true)
+    setShowSyncWarning(false)
+    try {
+      const backendUrl = getBackendUrl()
+      console.log('[DEBUG] Triggering AI Engine re-sync at:', backendUrl)
+      
+      const res = await fetch(`${backendUrl}/materials/process`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ materialId: material.id }),
+      })
+      if (res.ok) {
+        setMaterial(prev => ({ ...prev, status: 'processing' }))
+      } else {
+        console.error('Failed to trigger reprocess:', res.status)
+        alert('Engine sync failed. Our nodes might be temporarily overloaded.')
+      }
+    } catch (err) {
+      console.error('Error triggering reprocess:', err)
+      alert('Connection error. Could not reach the AI Engine.')
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
+  // Handle Real-time updates
+  useEffect(() => {
+    if (material.status === 'completed') {
+      setShowSyncWarning(false)
+      return
+    }
+
+    // Set a warning timer if it stays in non-completed state for too long
+    const warningTimer = setTimeout(() => {
+      if (material.status !== 'completed') {
+        setShowSyncWarning(true)
+      }
+    }, 45000)
+
+    const fetchLatest = async () => {
+      const { data, error } = await supabase
+        .from('materials')
+        .select('*')
+        .eq('id', material.id)
+        .single()
+      
+      if (data && !error) {
+        setMaterial(data)
+        
+        if (data.audio_url && !currentAudioUrl) {
+          const { data: urlData } = await supabase.storage
+            .from('lecture-materials')
+            .createSignedUrl(data.audio_url, 3600)
+          setCurrentAudioUrl(urlData?.signedUrl || null)
+        }
+      }
+    }
+
+    const channel = supabase
+      .channel(`material-sync-${material.id}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'materials', filter: `id=eq.${material.id}` },
+        () => {
+          fetchLatest()
+          router.refresh()
+        }
+      )
+      .subscribe()
+
+    const interval = setInterval(fetchLatest, 5000)
+
+    return () => {
+      supabase.removeChannel(channel)
+      clearInterval(interval)
+      clearTimeout(warningTimer)
+    }
+  }, [material.id, material.status, supabase, currentAudioUrl, router])
 
   if (material.status === 'failed') {
     return (
@@ -59,16 +149,47 @@ export function MaterialContent({ material, audioUrl }: MaterialContentProps) {
                 <FileAudio className="w-4 h-4 text-primary" />
                 <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Neural Playback</h2>
              </div>
-             <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+             <Sparkles className={`w-3.5 h-3.5 text-primary ${material.status !== 'completed' ? 'animate-pulse' : ''}`} />
           </div>
-          {audioUrl ? (
+          {currentAudioUrl ? (
             <Card className="border-none shadow-2xl bg-slate-950 text-white rounded-2xl overflow-hidden p-10 lg:p-14">
-               <AudioPlayer src={audioUrl} />
+               <AudioPlayer src={currentAudioUrl} />
             </Card>
+          ) : material.status === 'completed' ? (
+            <div className="p-16 bg-white rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
+               <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
+                  <FileAudio className="w-6 h-6" />
+               </div>
+               <p className="font-bold text-slate-400 text-xs uppercase tracking-widest">Audio Module Inactive</p>
+            </div>
           ) : (
-             <div className="p-16 bg-white rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
-                <Loader2 className="w-10 h-10 text-primary/30 animate-spin" />
-                <p className="font-bold text-slate-900 text-sm uppercase tracking-widest opacity-60">Synthesizing stream...</p>
+             <div className="p-16 bg-white rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center justify-center text-center space-y-6">
+                <div className="relative">
+                   <Loader2 className="w-12 h-12 text-primary/30 animate-spin" />
+                   <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 text-primary animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                   <p className="font-bold text-slate-900 text-sm uppercase tracking-widest opacity-60">
+                     {material.status === 'processing' ? 'Neural Mapping in progress...' : 'Synthesizing stream...'}
+                   </p>
+                   {showSyncWarning && (
+                     <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight max-w-xs animate-in fade-in slide-in-from-top-2 duration-700">
+                       Wait time is longer than usual. The neural link might be weak.
+                     </p>
+                   )}
+                </div>
+                {showSyncWarning && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="rounded-xl font-bold uppercase text-[9px] tracking-widest h-10 px-6 border-red-100 text-red-600 hover:bg-red-50"
+                    onClick={triggerReprocess}
+                    disabled={isSyncing}
+                  >
+                    <RefreshCw className={`w-3 h-3 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
+                    Force Engine Sync
+                  </Button>
+                )}
              </div>
           )}
         </section>
@@ -94,7 +215,7 @@ export function MaterialContent({ material, audioUrl }: MaterialContentProps) {
                   <p className="whitespace-pre-wrap">{material.simplified_content}</p>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-32 space-y-4 opacity-20">
-                     <Sparkles className="w-12 h-12" />
+                     <Sparkles className="w-12 h-12 animate-pulse" />
                      <p className="text-[9px] font-black uppercase tracking-[0.3em]">AI mapping active... rendering</p>
                   </div>
                 )}
@@ -114,7 +235,7 @@ export function MaterialContent({ material, audioUrl }: MaterialContentProps) {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-32 space-y-4 opacity-20">
-                     <Sparkles className="w-12 h-12" />
+                     <Sparkles className="w-12 h-12 animate-pulse" />
                      <p className="text-[9px] font-black uppercase tracking-[0.3em]">Neural summary initializing</p>
                   </div>
                 )}
@@ -157,9 +278,15 @@ export function MaterialContent({ material, audioUrl }: MaterialContentProps) {
                   </div>
                </div>
                <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Sync</span>
-                  <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10 rounded-lg" onClick={() => window.location.reload()}>
-                     <RefreshCw className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Engine</span>
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-8 w-8 hover:bg-white/10 rounded-lg" 
+                    onClick={triggerReprocess}
+                    disabled={isSyncing || material.status === 'completed'}
+                  >
+                     <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
                   </Button>
                </div>
             </div>

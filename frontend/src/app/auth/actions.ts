@@ -64,13 +64,9 @@ export async function signup(formData: FormData) {
     await supabase.auth.signOut()
   }
 
-    revalidatePath('/', 'layout')
-
-    redirect('/auth/sign-in?message=signup-success')
-
-  }
-
-  
+  revalidatePath('/', 'layout')
+  redirect('/auth/sign-in?message=signup-success')
+}
 
 export interface PreferenceSettings {
   contrast?: 'standard' | 'high-contrast';
@@ -102,5 +98,3 @@ export async function updatePreferences(preferences: PreferenceSettings) {
   revalidatePath('/', 'layout');
   return { success: true };
 }
-
-  

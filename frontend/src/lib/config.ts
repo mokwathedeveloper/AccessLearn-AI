@@ -8,10 +8,18 @@ export const config = {
 }
 
 export const getBackendUrl = () => {
+  const url = config.backendUrl
+  
+  if (typeof window !== 'undefined') {
+    // Client-side debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[CONFIG] AI Engine Link:', url)
+    }
+  }
+
   // In production, we should prioritize the environment variable
-  // If not set, we might want to log a warning
   if (!process.env.NEXT_PUBLIC_BACKEND_URL && process.env.NODE_ENV === 'production') {
     console.warn('NEXT_PUBLIC_BACKEND_URL is not defined in production environment')
   }
-  return config.backendUrl
+  return url
 }
