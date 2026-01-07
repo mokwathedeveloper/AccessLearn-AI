@@ -131,6 +131,7 @@ export function MaterialContent({ material, audioUrl }: MaterialContentProps) {
                        variant="ghost" 
                        onClick={() => adjustFontSize(-2)}
                        className="h-8 w-8 hover:bg-white/10 rounded-lg font-black text-xs"
+                       aria-label="Decrease text size"
                      >
                        A-
                      </Button>
@@ -139,6 +140,7 @@ export function MaterialContent({ material, audioUrl }: MaterialContentProps) {
                        variant="ghost" 
                        onClick={() => adjustFontSize(2)}
                        className="h-8 w-8 hover:bg-white/10 rounded-lg font-black text-xs"
+                       aria-label="Increase text size"
                      >
                        A+
                      </Button>

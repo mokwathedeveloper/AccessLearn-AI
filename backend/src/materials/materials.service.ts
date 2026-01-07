@@ -109,17 +109,19 @@ export class MaterialsService {
         `[EXTRACT] Successfully extracted ${text.length} characters.`,
       );
 
-      // 4. Summarize and Simplify using Gemini AI
+      // 4. Summarize and Simplify using AI Core (DeepSeek with Gemini Fallback)
+      this.logger.log(`[AI] Initializing Neural Analysis for material: ${materialId}`);
       const { summary, simplified } = await this.aiService.summarize(text);
 
       // 5. Generate Audio (TTS)
+      this.logger.log(`[TTS] Synthesizing speech for summary...`);
       const audioBuffer = await this.aiService.generateSpeech(summary);
 
       // 6. Upload Audio to Storage
       const userFolder = material.file_url.split('/')[0];
       const audioPath = `${userFolder}/audio_${materialId}.mp3`;
 
-      this.logger.log(`[UPLOAD] Uploading audio to storage: ${audioPath}`);
+      this.logger.log(`[STORAGE] Uploading neural audio: ${audioPath}`);
       const { error: uploadError } = await this.supabase.storage
         .from('lecture-materials')
         .upload(audioPath, audioBuffer, {
@@ -127,7 +129,11 @@ export class MaterialsService {
           upsert: true,
         });
 
-      // 7. Update Database
+      if (uploadError) {
+        this.logger.warn(`[STORAGE] Audio upload failed but continuing: ${uploadError.message}`);
+      }
+
+      // 7. Update Database with final results
       const { error: updateError } = await this.supabase
         .from('materials')
         .update({

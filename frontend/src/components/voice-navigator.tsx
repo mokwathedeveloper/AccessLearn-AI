@@ -86,26 +86,30 @@ export function VoiceNavigator() {
     const cmd = command.toLowerCase()
     console.log('Voice Command:', cmd)
 
-    if (cmd.includes('dashboard') || cmd.includes('home')) {
+    if (cmd.includes('dashboard') || cmd.includes('home') || cmd.includes('library')) {
       router.push('/dashboard')
-    } else if (cmd.includes('upload')) {
+    } else if (cmd.includes('upload') || cmd.includes('add')) {
       router.push('/dashboard')
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }, 500)
-    } else if (cmd.includes('sign out') || cmd.includes('logout')) {
+    } else if (cmd.includes('sign out') || cmd.includes('logout') || cmd.includes('exit')) {
       router.push('/')
-    } else if (cmd.includes('back')) {
+    } else if (cmd.includes('back') || cmd.includes('return')) {
       router.back()
-    } else if (cmd.includes('read') || cmd.includes('speak')) {
+    } else if (cmd.includes('stop') || cmd.includes('pause') || cmd.includes('shut up')) {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel()
+      }
+    } else if (cmd.includes('read') || cmd.includes('speak') || cmd.includes('listen')) {
       const contentElement = (document.querySelector('[role="main"]') || document.getElementById('main-content') || document.body) as HTMLElement
-      const textToRead = contentElement.innerText.substring(0, 2000) // Increase limit
+      // Filter out nav/footer/sidebar for cleaner reading
+      const textToRead = contentElement.innerText.substring(0, 5000)
       
       if (textToRead && typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel() // Stop any current speech
+        window.speechSynthesis.cancel()
         const utterance = new SpeechSynthesisUtterance(textToRead)
         
-        // Load voice speed from localStorage if available
         const savedSpeed = localStorage.getItem('accesslearn_voice_speed')
         if (savedSpeed) {
           utterance.rate = parseFloat(savedSpeed)

@@ -14,6 +14,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
+import { getBackendUrl } from '@/lib/config'
+
 export function UploadSection() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -27,19 +29,23 @@ export function UploadSection() {
 
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Unauthorized')
+      if (!user) throw new Error('Authentication required for upload.')
 
       const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random()}.${fileExt}`
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`
       const filePath = `${user.id}/${fileName}`
 
+      // 1. Upload to Supabase Storage
       const { error: uploadError, data: uploadData } = await supabase.storage
         .from('lecture-materials')
         .upload(filePath, file)
 
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        throw new Error(`Storage upload failed: ${uploadError.message}`)
+      }
 
-      const { error: dbError } = await supabase
+      // 2. Register in Database
+      const { data: materialRecord, error: dbError } = await supabase
         .from('materials')
         .insert({
           title: file.name,
@@ -49,30 +55,32 @@ export function UploadSection() {
           uploaded_by: user.id,
           status: 'pending'
         })
-
-      if (dbError) throw dbError
-
-      const materialData = await supabase
-        .from('materials')
-        .select('id')
-        .eq('file_url', uploadData.path)
+        .select()
         .single()
+
+      if (dbError) throw new Error(`Database registration failed: ${dbError.message}`)
+
+      // 3. Trigger AI Processing via Backend
+      const backendUrl = getBackendUrl()
       
-      if (materialData.data) {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'
-        fetch(`${backendUrl}/materials/process`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ materialId: materialData.data.id }),
-        }).catch(err => console.error('Failed to trigger processing:', err))
-      }
+      // We don't await the process trigger to allow the UI to refresh immediately,
+      // but we log any failure to reach the backend.
+      fetch(`${backendUrl}/materials/process`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ materialId: materialRecord.id }),
+      }).then(res => {
+        if (!res.ok) console.error('Backend trigger returned error status:', res.status)
+      }).catch(err => {
+        console.error('Failed to reach AI Processing Backend:', err)
+      })
 
       setFile(null)
       router.refresh()
     } catch (error) {
-      console.error('Upload failed:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      alert(`Upload failed: ${errorMessage}`)
+      console.error('Upload system failure:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown system error'
+      alert(`SYSTEM ERROR: ${errorMessage}`)
     } finally {
       setUploading(false)
     }
@@ -106,11 +114,12 @@ export function UploadSection() {
                      className="h-24 w-24 rounded-[2rem] shadow-2xl shadow-primary/40 active:scale-90 transition-all p-0" 
                      disabled={!file || uploading}
                      onClick={handleUpload}
+                     aria-label={uploading ? "Neural processing in progress" : "Initialize AI Transformation for selected file"}
                    >
                      {uploading ? (
-                        <Cpu className="w-10 h-10 animate-spin fill-current" />
+                        <Cpu className="w-10 h-10 animate-spin fill-current" aria-hidden="true" />
                      ) : (
-                        <Zap className="w-10 h-10 fill-current" />
+                        <Zap className="w-10 h-10 fill-current" aria-hidden="true" />
                      )}
                    </Button>
                 </TooltipTrigger>
