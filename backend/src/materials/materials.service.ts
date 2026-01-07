@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, Logger } from '@nestjs/common';
 import {
   createClient,
@@ -56,7 +58,6 @@ export class MaterialsService {
         .eq('id', materialId)
         .single();
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const data = response.data;
 
       const fetchError: PostgrestError | null = response.error;
@@ -96,9 +97,11 @@ export class MaterialsService {
           const parser = new PDFParse({ data: buffer });
           const textResult = await parser.getText();
           text = textResult.text;
-        } catch (parseError) {
+        } catch (parseError: any) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          const msg = parseError?.message || 'Unknown PDF error';
           this.logger.error('Neural PDF extraction failed', parseError);
-          throw new Error(`PDF decoding failed: ${parseError.message}`);
+          throw new Error(`PDF decoding failed: ${msg}`);
         }
       } else {
         this.logger.log(`[EXTRACT] Reading plain text content...`);
@@ -187,9 +190,9 @@ export class MaterialsService {
 
       this.logger.log(`[SUCCESS] Material processed: ${materialId}`);
       return { success: true };
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown neural error';
+    } catch (error: any) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const errorMessage = error?.message || 'Unknown neural error';
       const errorStack = error instanceof Error ? error.stack : '';
 
       this.logger.error(

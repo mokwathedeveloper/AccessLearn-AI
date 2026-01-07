@@ -15,6 +15,7 @@ interface Material {
   id: string;
   title: string;
   status: string;
+  description: string | null;
   summary: string | null;
   simplified_content: string | null;
   audio_url: string | null;
@@ -122,7 +123,7 @@ export function MaterialContent({ material: initialMaterial, audioUrl: initialAu
       clearInterval(interval)
       clearTimeout(warningTimer)
     }
-  }, [material.id, material.status, supabase, currentAudioUrl, router])
+  }, [material.id, material.status, material.audio_url, supabase, currentAudioUrl, router])
 
   if (material.status === 'failed') {
     return (
@@ -158,7 +159,7 @@ export function MaterialContent({ material: initialMaterial, audioUrl: initialAu
           </div>
           {currentAudioUrl ? (
             <Card className="border-none shadow-2xl bg-slate-950 text-white rounded-2xl overflow-hidden p-10 lg:p-14">
-               <AudioPlayer src={currentAudioUrl} />
+               <AudioPlayer key={currentAudioUrl} src={currentAudioUrl} />
             </Card>
           ) : material.status === 'completed' ? (
             <div className="p-16 bg-white rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center justify-center text-center space-y-4">

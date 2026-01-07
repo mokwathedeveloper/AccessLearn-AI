@@ -18,12 +18,8 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
 
-  // Reset state and apply speed when src changes
+  // apply speed when src changes
   useEffect(() => {
-    setIsPlaying(false)
-    setProgress(0)
-    setCurrentTime(0)
-    
     const savedVoiceSpeed = localStorage.getItem('accesslearn_voice_speed')
     if (savedVoiceSpeed && audioRef.current) {
       audioRef.current.playbackRate = parseFloat(savedVoiceSpeed)
