@@ -16,6 +16,9 @@ interface MaterialRecord {
   uploaded_by: string;
   status: string;
   file_type: string;
+  enable_summary: boolean;
+  enable_logic: boolean;
+  enable_encryption: boolean;
 }
 
 interface PdfData {
@@ -109,32 +112,49 @@ export class MaterialsService {
         `[EXTRACT] Successfully extracted ${text.length} characters.`,
       );
 
-      // 4. Summarize and Simplify using AI Core (DeepSeek with Gemini Fallback)
-      this.logger.log(
-        `[AI] Initializing Neural Analysis for material: ${materialId}`,
-      );
-      const { summary, simplified } = await this.aiService.summarize(text);
+      // 4. AI Analysis Stage (Conditional)
+      let summary: string | null = null;
+      let simplified: string | null = null;
+      let audioPath: string | null = null;
 
-      // 5. Generate Audio (TTS)
-      this.logger.log(`[TTS] Synthesizing speech for summary...`);
-      const audioBuffer = await this.aiService.generateSpeech(summary);
-
-      // 6. Upload Audio to Storage
-      const userFolder = material.file_url.split('/')[0];
-      const audioPath = `${userFolder}/audio_${materialId}.mp3`;
-
-      this.logger.log(`[STORAGE] Uploading neural audio: ${audioPath}`);
-      const { error: uploadError } = await this.supabase.storage
-        .from('lecture-materials')
-        .upload(audioPath, audioBuffer, {
-          contentType: 'audio/mpeg',
-          upsert: true,
-        });
-
-      if (uploadError) {
-        this.logger.warn(
-          `[STORAGE] Audio upload failed but continuing: ${uploadError.message}`,
+      if (material.enable_summary || material.enable_logic) {
+        this.logger.log(
+          `[AI] Initializing Neural Analysis for material: ${materialId}`,
         );
+        const aiRes = await this.aiService.summarize(text);
+
+        if (material.enable_summary) {
+          summary = aiRes.summary;
+        }
+
+        if (material.enable_logic) {
+          simplified = aiRes.simplified;
+        }
+      }
+
+      // 5. Audio Synthesis Stage (Conditional)
+      if (summary && material.enable_summary) {
+        this.logger.log(`[TTS] Synthesizing speech for summary...`);
+        const audioBuffer = await this.aiService.generateSpeech(summary);
+
+        // 6. Upload Audio to Storage
+        const userFolder = material.file_url.split('/')[0];
+        audioPath = `${userFolder}/audio_${materialId}.mp3`;
+
+        this.logger.log(`[STORAGE] Uploading neural audio: ${audioPath}`);
+        const { error: uploadError } = await this.supabase.storage
+          .from('lecture-materials')
+          .upload(audioPath, audioBuffer, {
+            contentType: 'audio/mpeg',
+            upsert: true,
+          });
+
+        if (uploadError) {
+          this.logger.warn(
+            `[STORAGE] Audio upload failed but continuing: ${uploadError.message}`,
+          );
+          audioPath = null;
+        }
       }
 
       // 7. Update Database with final results
@@ -143,7 +163,7 @@ export class MaterialsService {
         .update({
           summary,
           simplified_content: simplified,
-          audio_url: uploadError ? null : audioPath,
+          audio_url: audioPath,
           status: 'completed',
           updated_at: new Date().toISOString(),
         })
