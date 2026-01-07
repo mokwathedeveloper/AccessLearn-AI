@@ -24,6 +24,7 @@ export default async function MaterialDetailPage({ params }: PageProps) {
   const { id } = await params
   const supabase = await createClient()
 
+  // 1. Fetch material metadata with high priority
   const { data: material, error } = await supabase
     .from('materials')
     .select('*')
@@ -34,12 +35,17 @@ export default async function MaterialDetailPage({ params }: PageProps) {
     notFound()
   }
 
+  // 2. Dynamic Audio Link Generation
   let audioUrl = null
   if (material.audio_url) {
-    const { data } = await supabase.storage
-      .from('lecture-materials')
-      .createSignedUrl(material.audio_url, 3600)
-    audioUrl = data?.signedUrl
+    try {
+      const { data } = await supabase.storage
+        .from('lecture-materials')
+        .createSignedUrl(material.audio_url, 3600)
+      audioUrl = data?.signedUrl
+    } catch (err) {
+      console.error('[SERVER] Audio Link Generation Failure:', err)
+    }
   }
 
   return (

@@ -130,6 +130,19 @@ export class MaterialsService {
         if (material.enable_logic) {
           simplified = aiRes.simplified;
         }
+
+        // --- OPTIMIZATION: Partial Update ---
+        // Save the text content immediately so the user can start reading
+        // while the slower Audio Synthesis (TTS) runs in the background.
+        this.logger.log(`[SYNC] Pushing partial neural data to registry...`);
+        await this.supabase
+          .from('materials')
+          .update({
+            summary,
+            simplified_content: simplified,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', materialId);
       }
 
       // 5. Audio Synthesis Stage (Conditional)
