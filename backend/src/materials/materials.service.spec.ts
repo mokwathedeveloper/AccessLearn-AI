@@ -74,6 +74,8 @@ describe('MaterialsService', () => {
           id: materialId,
           file_url: 'user/file.txt',
           uploaded_by: 'user',
+          enable_summary: true,
+          enable_logic: true,
         },
         error: null,
       }),
