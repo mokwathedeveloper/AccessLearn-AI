@@ -1,5 +1,5 @@
 import { Controller, Get, Logger, UseInterceptors } from '@nestjs/common';
-import { AdminService } from './admin.service';
+import { AdminService, AdminStats } from './admin.service';
 import { PerformanceInterceptor } from '../common/interceptors/performance.interceptor';
 
 @Controller('admin')
@@ -10,7 +10,7 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Get('stats')
-  async getStats() {
+  async getStats(): Promise<AdminStats> {
     this.logger.log('[API] GET /admin/stats');
     return await this.adminService.getStats();
   }

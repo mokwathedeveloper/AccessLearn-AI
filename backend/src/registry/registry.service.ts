@@ -25,7 +25,7 @@ interface MaterialSyncRecord {
 @Injectable()
 export class RegistryService {
   private readonly logger = new Logger(RegistryService.name);
-  private supabase: SupabaseClient;
+  private supabase: SupabaseClient<any, 'public', any>;
 
   constructor(private readonly configService: ConfigService) {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
@@ -44,7 +44,7 @@ export class RegistryService {
         autoRefreshToken: false,
         persistSession: false,
       },
-    }) as SupabaseClient;
+    }) as SupabaseClient<any, 'public', any>;
   }
 
   async fullSync() {
@@ -127,23 +127,29 @@ export class RegistryService {
           search: filename,
         });
 
-      const files = fileExists as any[];
+      const files = fileExists as unknown as {
+        name: string;
+        metadata?: { size?: number };
+      }[];
 
       if (!files || files.length === 0) {
-        this.logger.warn(`[SYNC] Material ${material.id} has missing file: ${material.file_url}`);
+        this.logger.warn(
+          `[SYNC] Material ${material.id} has missing file: ${material.file_url}`,
+        );
         if (material.status !== 'failed') {
           await this.supabase
             .from('materials')
-            .update({ 
-              status: 'failed', 
-              description: (material.description || '') + ' [System: File Missing]' 
+            .update({
+              status: 'failed',
+              description:
+                (material.description || '') + ' [System: File Missing]',
             })
             .eq('id', material.id);
           missingFiles++;
         }
       } else {
         // Backfill file_size if missing
-        const fileMeta = files.find(f => f.name === filename);
+        const fileMeta = files.find((f) => f.name === filename);
         if (fileMeta && fileMeta.metadata?.size) {
           await this.supabase
             .from('materials')

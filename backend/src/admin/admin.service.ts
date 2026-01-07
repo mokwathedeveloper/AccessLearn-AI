@@ -1,11 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, Logger } from '@nestjs/common';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import {
+  createClient,
+  SupabaseClient,
+  PostgrestError,
+} from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
+
+export interface AdminStats {
+  totalUsers: number;
+  assetsStored: number;
+  syncSuccess: string;
+  dataVolume: string;
+  health: {
+    gatewayResponse: number;
+    neuralThroughput: number;
+  };
+  errors: {
+    userError: PostgrestError | null;
+    materialError: PostgrestError | null;
+  };
+}
 
 @Injectable()
 export class AdminService {
   private readonly logger = new Logger(AdminService.name);
-  private supabase: SupabaseClient;
+  private supabase: SupabaseClient<any, 'public', any>;
 
   constructor(private readonly configService: ConfigService) {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
@@ -19,10 +39,14 @@ export class AdminService {
       );
     }
 
-    this.supabase = createClient(supabaseUrl, supabaseKey);
+    this.supabase = createClient(supabaseUrl, supabaseKey) as SupabaseClient<
+      any,
+      'public',
+      any
+    >;
   }
 
-  async getStats() {
+  async getStats(): Promise<AdminStats> {
     this.logger.log('[ADMIN] Fetching platform stats...');
 
     // 1. Get total users
@@ -50,16 +74,20 @@ export class AdminService {
       .from('materials')
       .select('file_size');
 
-    const totalBytes = (sizeData || []).reduce((acc, curr) => acc + (curr.file_size || 0), 0);
+    const totalBytes = (
+      (sizeData as { file_size: number | null }[]) || []
+    ).reduce((acc, curr) => acc + (curr.file_size || 0), 0);
     const mbVolume = totalBytes / (1024 * 1024);
-    
-    const formattedVolume = mbVolume > 1024 
-      ? `${(mbVolume / 1024).toFixed(1)}GB` 
-      : `${mbVolume.toFixed(1)}MB`;
 
-    const syncSuccessNum = totalLogs && totalLogs > 0 
-      ? Math.round(((successLogs || 0) / totalLogs) * 100) 
-      : 100;
+    const formattedVolume =
+      mbVolume > 1024
+        ? `${(mbVolume / 1024).toFixed(1)}GB`
+        : `${mbVolume.toFixed(1)}MB`;
+
+    const syncSuccessNum =
+      totalLogs && totalLogs > 0
+        ? Math.round(((successLogs || 0) / totalLogs) * 100)
+        : 100;
 
     // 5. Calculate Health Metrics for Gauge components
     const neuralThroughput = materialCount && materialCount > 0 ? 92 : 0;
@@ -75,9 +103,9 @@ export class AdminService {
         neuralThroughput,
       },
       errors: {
-        userError,
-        materialError,
-      }
+        userError: userError || null,
+        materialError: materialError || null,
+      },
     };
   }
 }

@@ -85,10 +85,12 @@ export class AiService {
    */
   async generateSpeech(text: string): Promise<Buffer> {
     this.logger.log('Generating neural audio via OpenAI TTS...');
-    
+
     const openaiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!openaiKey) {
-      this.logger.warn('OPENAI_API_KEY not found, falling back to dummy buffer');
+      this.logger.warn(
+        'OPENAI_API_KEY not found, falling back to dummy buffer',
+      );
       return Buffer.from('Dummy MP3 content - API Key Missing');
     }
 
