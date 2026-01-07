@@ -72,36 +72,35 @@ export async function signup(formData: FormData) {
 
   
 
-  export async function updatePreferences(preferences: any) {
+export interface PreferenceSettings {
+  contrast?: 'standard' | 'high-contrast';
+  textSize?: 'default' | 'large';
+  voiceSpeed?: number;
+  listening?: boolean;
+  emailNotif?: boolean;
+  reminders?: boolean;
+  alerts?: boolean;
+  twoFactor?: boolean;
+  lang?: string;
+}
 
-    const supabase = await createClient()
+export async function updatePreferences(preferences: PreferenceSettings) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' };
 
-  
+  const { error } = await supabase
+    .from('users')
+    .update({ preferences })
+    .eq('id', user.id);
 
-    if (!user) return { error: 'Unauthorized' }
+  if (error) return { error: error.message };
 
-  
-
-    const { error } = await supabase
-
-      .from('users')
-
-      .update({ preferences })
-
-      .eq('id', user.id)
-
-  
-
-    if (error) return { error: error.message }
-
-    
-
-    revalidatePath('/', 'layout')
-
-    return { success: true }
-
-  }
+  revalidatePath('/', 'layout');
+  return { success: true };
+}
 
   

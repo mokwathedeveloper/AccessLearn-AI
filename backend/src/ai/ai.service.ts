@@ -10,7 +10,8 @@ export class AiService {
   private genAI: GoogleGenerativeAI | null = null;
 
   constructor(private readonly configService: ConfigService) {
-    const deepseekKey = this.configService.get<string>('DEEPSEEK_API_KEY') || '';
+    const deepseekKey =
+      this.configService.get<string>('DEEPSEEK_API_KEY') || '';
     this.openai = new OpenAI({
       apiKey: deepseekKey,
       baseURL: 'https://openrouter.ai/api/v1',
@@ -37,7 +38,10 @@ export class AiService {
       try {
         return await this.summarizeWithDeepSeek(text);
       } catch (error) {
-        this.logger.warn('DeepSeek failed, attempting Gemini fallback...', error);
+        this.logger.warn(
+          'DeepSeek failed, attempting Gemini fallback...',
+          error,
+        );
       }
     }
 
@@ -52,7 +56,8 @@ export class AiService {
 
     // Ultimate Fallback
     return {
-      summary: 'Automated summary unavailable. Please check API configurations.',
+      summary:
+        'Automated summary unavailable. Please check API configurations.',
       simplified: text.substring(0, 1000) + '... [Auto-simplification failed]',
     };
   }

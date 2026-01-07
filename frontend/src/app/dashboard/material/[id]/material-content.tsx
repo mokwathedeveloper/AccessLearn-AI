@@ -7,9 +7,19 @@ import { Sparkles, RefreshCw, FileAudio, Loader2, AlertCircle } from 'lucide-rea
 import { Button } from '@/components/ui/button'
 import { AudioPlayer } from '@/components/audio-player'
 
+interface Material {
+  id: string;
+  title: string;
+  status: string;
+  summary: string | null;
+  simplified_content: string | null;
+  audio_url: string | null;
+  created_at: string;
+}
+
 interface MaterialContentProps {
-  material: any
-  audioUrl: string | null
+  material: Material;
+  audioUrl: string | null;
 }
 
 export function MaterialContent({ material, audioUrl }: MaterialContentProps) {

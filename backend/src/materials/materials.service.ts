@@ -110,7 +110,9 @@ export class MaterialsService {
       );
 
       // 4. Summarize and Simplify using AI Core (DeepSeek with Gemini Fallback)
-      this.logger.log(`[AI] Initializing Neural Analysis for material: ${materialId}`);
+      this.logger.log(
+        `[AI] Initializing Neural Analysis for material: ${materialId}`,
+      );
       const { summary, simplified } = await this.aiService.summarize(text);
 
       // 5. Generate Audio (TTS)
@@ -130,7 +132,9 @@ export class MaterialsService {
         });
 
       if (uploadError) {
-        this.logger.warn(`[STORAGE] Audio upload failed but continuing: ${uploadError.message}`);
+        this.logger.warn(
+          `[STORAGE] Audio upload failed but continuing: ${uploadError.message}`,
+        );
       }
 
       // 7. Update Database with final results

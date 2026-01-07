@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent } from '@/components/ui/card'
 import { 
@@ -8,7 +8,6 @@ import {
   Headphones, 
   Sparkles, 
   Clock, 
-  CheckCircle2, 
   AlertCircle, 
   Loader2,
   ChevronRight,
@@ -17,33 +16,42 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
+interface Material {
+  id: string;
+  title: string;
+  status: string;
+  audio_url: string | null;
+  summary: string | null;
+  created_at: string;
+}
+
 export function MaterialsList() {
-  const [materials, setMaterials] = useState<any[]>([])
+  const [materials, setMaterials] = useState<Material[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
   const router = useRouter()
 
-  const fetchMaterials = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const { data, error } = await supabase
-      .from('materials')
-      .select('*')
-      .eq('uploaded_by', user.id)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Fetch error:', error)
-      setError(true)
-    } else {
-      setMaterials(data || [])
-    }
-    setLoading(false)
-  }
-
   useEffect(() => {
+    const fetchMaterials = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('materials')
+        .select('*')
+        .eq('uploaded_by', user.id)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Fetch error:', error)
+        setError(true)
+      } else {
+        setMaterials(data || [])
+      }
+      setLoading(false)
+    }
+
     fetchMaterials()
 
     // Real-time subscription for status updates
@@ -62,7 +70,7 @@ export function MaterialsList() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [])
+  }, [router, supabase])
 
   if (loading) {
     return (

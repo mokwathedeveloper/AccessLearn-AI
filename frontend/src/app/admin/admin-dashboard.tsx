@@ -5,25 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { 
   Users, 
   FileStack, 
-  ShieldAlert, 
-  Database, 
   Search,
-  LayoutDashboard,
   Zap,
   HardDrive,
   Loader2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import Link from 'next/link'
 import { PerformanceLogs } from './performance-logs'
-import { SyncButton } from './sync-button'
 
 interface Stats {
   totalUsers: number
