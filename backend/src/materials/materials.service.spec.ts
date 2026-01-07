@@ -20,6 +20,13 @@ jest.mock('@supabase/supabase-js', () => ({
   })),
 }));
 
+// Mock pdf-parse
+jest.mock('pdf-parse', () => ({
+  PDFParse: jest.fn().mockImplementation(() => ({
+    getText: jest.fn().mockResolvedValue({ text: 'Extracted PDF Content' }),
+  })),
+}));
+
 describe('MaterialsService', () => {
   let service: MaterialsService;
   let aiService: AiService;

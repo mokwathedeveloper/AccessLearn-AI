@@ -32,7 +32,10 @@ describe('MaterialsController', () => {
       const materialId = 'test-id';
       const result = await controller.process(materialId);
 
-      expect(result).toEqual({ message: 'Processing started' });
+      expect(result).toEqual({
+        message: 'Processing started',
+        id: materialId,
+      });
       // We can't easily await the un-awaited promise inside the controller method from here without changing implementation,
       // but we can verify the mock was called if we wait a tick.
       await new Promise((resolve) => setTimeout(resolve, 0));

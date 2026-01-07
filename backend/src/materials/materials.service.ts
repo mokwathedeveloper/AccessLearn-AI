@@ -6,7 +6,7 @@ import {
 } from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
 import { AiService } from '../ai/ai.service';
-import pdf from 'pdf-parse';
+import { PDFParse } from 'pdf-parse';
 
 // Define the shape of the material record to avoid 'any'
 interface MaterialRecord {
@@ -18,10 +18,6 @@ interface MaterialRecord {
   enable_summary: boolean;
   enable_logic: boolean;
   enable_encryption: boolean;
-}
-
-interface PdfData {
-  text: string;
 }
 
 @Injectable()
@@ -93,30 +89,16 @@ export class MaterialsService {
       // 3. Extract text based on file type
       let text = '';
       if (material.file_type === 'application/pdf') {
-        this.logger.log(`[EXTRACT] Parsing PDF content...`);
+        this.logger.log(`[EXTRACT] Parsing PDF content via Neural Parser...`);
         const buffer = Buffer.from(await fileBlob.arrayBuffer());
 
-        // Standard ESM/CJS interop handling
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-        const parsePdf: any = pdf;
-
-        if (typeof parsePdf !== 'function') {
-          // One final attempt to find the function on .default
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          const finalFallback = parsePdf?.default;
-          if (typeof finalFallback !== 'function') {
-            throw new Error(
-              `PDF parsing library failed to load as a function. Type received: ${typeof parsePdf}`,
-            );
-          }
-          
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          const pdfData = (await finalFallback(buffer)) as PdfData;
-          text = pdfData.text;
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          const pdfData = (await parsePdf(buffer)) as PdfData;
-          text = pdfData.text;
+        try {
+          const parser = new PDFParse({ data: buffer });
+          const textResult = await parser.getText();
+          text = textResult.text;
+        } catch (parseError) {
+          this.logger.error('Neural PDF extraction failed', parseError);
+          throw new Error(`PDF decoding failed: ${parseError.message}`);
         }
       } else {
         this.logger.log(`[EXTRACT] Reading plain text content...`);
