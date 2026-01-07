@@ -6,7 +6,7 @@ import {
 } from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
 import { AiService } from '../ai/ai.service';
-import * as pdf from 'pdf-parse';
+import pdf from 'pdf-parse';
 
 // Define the shape of the material record to avoid 'any'
 interface MaterialRecord {
@@ -96,19 +96,28 @@ export class MaterialsService {
         this.logger.log(`[EXTRACT] Parsing PDF content...`);
         const buffer = Buffer.from(await fileBlob.arrayBuffer());
 
-        // Handle potential ES module interop issues with pdf-parse
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        const parsePdf = typeof pdf === 'function' ? pdf : (pdf as any).default;
+        // Standard ESM/CJS interop handling
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+        const parsePdf: any = pdf;
 
         if (typeof parsePdf !== 'function') {
-          throw new Error(
-            'PDF parsing library failed to load as a function. Check dependencies.',
-          );
+          // One final attempt to find the function on .default
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          const finalFallback = parsePdf?.default;
+          if (typeof finalFallback !== 'function') {
+            throw new Error(
+              `PDF parsing library failed to load as a function. Type received: ${typeof parsePdf}`,
+            );
+          }
+          
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          const pdfData = (await finalFallback(buffer)) as PdfData;
+          text = pdfData.text;
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          const pdfData = (await parsePdf(buffer)) as PdfData;
+          text = pdfData.text;
         }
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const pdfData = (await parsePdf(buffer)) as PdfData;
-        text = pdfData.text;
       } else {
         this.logger.log(`[EXTRACT] Reading plain text content...`);
         text = await fileBlob.text();
