@@ -85,11 +85,13 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
     <div className={`flex flex-col space-y-6 ${className}`}>
       {src ? (
         <audio
+          key={src}
           ref={audioRef}
           src={src}
           onLoadedMetadata={handleLoadedMetadata}
           onTimeUpdate={handleTimeUpdate}
           onEnded={() => setIsPlaying(false)}
+          preload="metadata"
         />
       ) : null}
       

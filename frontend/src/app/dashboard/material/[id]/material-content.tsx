@@ -67,7 +67,7 @@ export function MaterialContent({ material: initialMaterial, audioUrl: initialAu
 
   // Handle Real-time updates
   useEffect(() => {
-    if (material.status === 'completed') {
+    if (material.status === 'completed' && currentAudioUrl) {
       setShowSyncWarning(false)
       return
     }
@@ -87,9 +87,14 @@ export function MaterialContent({ material: initialMaterial, audioUrl: initialAu
         .single()
       
       if (data && !error) {
+        const prevAudioUrl = material.audio_url
         setMaterial(data)
         
-        if (data.audio_url && !currentAudioUrl) {
+        // Refresh signed URL if:
+        // 1. We have a new audio_url from DB
+        // 2. The audio_url path changed (e.g. after re-sync)
+        if (data.audio_url && (data.audio_url !== prevAudioUrl || !currentAudioUrl)) {
+          console.log('[DEBUG] Generating fresh audio stream link...')
           const { data: urlData } = await supabase.storage
             .from('lecture-materials')
             .createSignedUrl(data.audio_url, 3600)
