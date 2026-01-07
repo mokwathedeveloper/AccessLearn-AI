@@ -6,8 +6,7 @@ import {
 } from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
 import { AiService } from '../ai/ai.service';
-// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
-const pdf = require('pdf-parse');
+import * as pdf from 'pdf-parse';
 
 // Define the shape of the material record to avoid 'any'
 interface MaterialRecord {
@@ -96,8 +95,19 @@ export class MaterialsService {
       if (material.file_type === 'application/pdf') {
         this.logger.log(`[EXTRACT] Parsing PDF content...`);
         const buffer = Buffer.from(await fileBlob.arrayBuffer());
+
+        // Handle potential ES module interop issues with pdf-parse
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        const parsePdf = typeof pdf === 'function' ? pdf : (pdf as any).default;
+
+        if (typeof parsePdf !== 'function') {
+          throw new Error(
+            'PDF parsing library failed to load as a function. Check dependencies.',
+          );
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const pdfData = (await pdf(buffer)) as PdfData;
+        const pdfData = (await parsePdf(buffer)) as PdfData;
         text = pdfData.text;
       } else {
         this.logger.log(`[EXTRACT] Reading plain text content...`);
