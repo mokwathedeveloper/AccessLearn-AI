@@ -129,10 +129,9 @@ export class AiService {
 
     const openaiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!openaiKey) {
-      this.logger.warn(
-        'OPENAI_API_KEY not found, falling back to dummy buffer',
+      throw new Error(
+        'OPENAI_API_KEY is missing. Audio synthesis cannot proceed.',
       );
-      return Buffer.from('Dummy MP3 content - API Key Missing');
     }
 
     const openaiReal = new OpenAI({ apiKey: openaiKey });

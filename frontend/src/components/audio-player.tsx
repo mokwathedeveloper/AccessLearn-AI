@@ -36,7 +36,8 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
         audioRef.current.pause()
       } else {
         audioRef.current.play().catch(err => {
-          console.error('[AUDIO] Playback failed:', err)
+          console.error('[AUDIO] Playback failed for source:', src)
+          console.error('[AUDIO] Error details:', err)
           setIsPlaying(false)
         })
       }
