@@ -18,8 +18,12 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
 
-  // Load and apply saved playback speed
+  // Reset state and apply speed when src changes
   useEffect(() => {
+    setIsPlaying(false)
+    setProgress(0)
+    setCurrentTime(0)
+    
     const savedVoiceSpeed = localStorage.getItem('accesslearn_voice_speed')
     if (savedVoiceSpeed && audioRef.current) {
       audioRef.current.playbackRate = parseFloat(savedVoiceSpeed)
@@ -27,11 +31,14 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
   }, [src])
 
   const togglePlay = () => {
-    if (audioRef.current) {
+    if (audioRef.current && src) {
       if (isPlaying) {
         audioRef.current.pause()
       } else {
-        audioRef.current.play()
+        audioRef.current.play().catch(err => {
+          console.error('[AUDIO] Playback failed:', err)
+          setIsPlaying(false)
+        })
       }
       setIsPlaying(!isPlaying)
     }
@@ -76,13 +83,15 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
 
   return (
     <div className={`flex flex-col space-y-6 ${className}`}>
-      <audio
-        ref={audioRef}
-        src={src}
-        onLoadedMetadata={handleLoadedMetadata}
-        onTimeUpdate={handleTimeUpdate}
-        onEnded={() => setIsPlaying(false)}
-      />
+      {src ? (
+        <audio
+          ref={audioRef}
+          src={src}
+          onLoadedMetadata={handleLoadedMetadata}
+          onTimeUpdate={handleTimeUpdate}
+          onEnded={() => setIsPlaying(false)}
+        />
+      ) : null}
       
       <div className="flex items-center justify-between">
          <div className="flex items-center gap-4">
