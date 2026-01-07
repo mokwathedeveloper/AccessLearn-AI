@@ -187,15 +187,23 @@ export class MaterialsService {
       this.logger.log(`[SUCCESS] Material processed: ${materialId}`);
       return { success: true };
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown neural error';
       const errorStack = error instanceof Error ? error.stack : '';
+
       this.logger.error(
-        `[ERROR] Processing failed for ${materialId}`,
+        `[ERROR] Processing failed for ${materialId}: ${errorMessage}`,
         errorStack,
       );
 
+      // Save the specific error message to the database for user/admin diagnostics
       await this.supabase
         .from('materials')
-        .update({ status: 'failed' })
+        .update({
+          status: 'failed',
+          description: `Engine Error: ${errorMessage}`,
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', materialId);
 
       throw error;

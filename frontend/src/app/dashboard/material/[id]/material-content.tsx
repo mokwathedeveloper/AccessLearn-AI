@@ -128,12 +128,12 @@ export function MaterialContent({ material: initialMaterial, audioUrl: initialAu
         <div className="space-y-2">
           <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Neural Processing Failure</h2>
           <p className="text-slate-500 max-w-md mx-auto text-sm font-medium">
-            Our AI engine encountered an error while decoding this document. This usually happens with complex layouts or encrypted files.
+            {material.description || 'Our AI engine encountered an error while decoding this document. This usually happens with complex layouts or encrypted files.'}
           </p>
         </div>
-        <Button variant="outline" className="rounded-xl h-12 px-8 font-bold border-red-200 text-red-600 hover:bg-red-50" onClick={() => window.location.reload()}>
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Retry Sync
+        <Button variant="outline" className="rounded-xl h-12 px-8 font-bold border-red-200 text-red-600 hover:bg-red-50" onClick={triggerReprocess}>
+          <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
+          {isSyncing ? 'Re-syncing...' : 'Retry Engine Sync'}
         </Button>
       </div>
     )
